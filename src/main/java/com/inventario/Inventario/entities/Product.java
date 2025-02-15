@@ -3,7 +3,7 @@ package com.inventario.Inventario.entities;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "products")
@@ -27,13 +27,13 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private Integer stock;
+    private int stock;
 
     @Temporal(TemporalType.DATE)
-    private Date expirationDate;
+    private LocalDate expirationDate;
 
-    @Lob
-    private byte[] image;
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "species_id", nullable = false)
@@ -84,28 +84,28 @@ public class Product {
         this.price = price;
     }
 
-    public Integer getStock() {
+    public int getStock() {
         return stock;
     }
 
-    public void setStock(Integer stock) {
+    public void setStock(int stock) {
         this.stock = stock;
     }
 
-    public Date getExpirationDate() {
+    public LocalDate getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getImage() {
+        return imageUrl;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImage(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Species getSpecies() {
