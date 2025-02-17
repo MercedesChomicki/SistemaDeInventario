@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,12 +43,7 @@ public class ProductService {
     }
 
     public Product createProduct(ProductRequestDTO dto) {
-        Species species = speciesRepository.findById(dto.getSpeciesId())
-                .orElseThrow(() -> new ResourceNotFoundException("Especie", dto.getSpeciesId()));
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría", dto.getCategoryId()));
-        Supplier supplier = supplierRepository.findById(dto.getSupplierId())
-                .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()));
+        Map<String, Object> entities = fetchRelatedEntities(dto);
 
         Product product = new Product();
         product.setCode(dto.getCode());
@@ -60,9 +53,9 @@ public class ProductService {
         product.setStock(dto.getStock());
         product.setExpirationDate(dto.getExpirationDate());
         product.setImageUrl(dto.getImageUrl());
-        product.setSpecies(species);
-        product.setCategory(category);
-        product.setSupplier(supplier);
+        product.setSpecies((Species) entities.get("species"));
+        product.setCategory((Category) entities.get("category"));
+        product.setSupplier((Supplier) entities.get("supplier"));
 
         return productRepository.save(product);
     }
@@ -71,12 +64,7 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
 
-        Species species = speciesRepository.findById(updatedProduct.getSpeciesId())
-                .orElseThrow(() -> new ResourceNotFoundException("Especie", updatedProduct.getSpeciesId()));
-        Category category = categoryRepository.findById(updatedProduct.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría", updatedProduct.getCategoryId()));
-        Supplier supplier = supplierRepository.findById(updatedProduct.getSupplierId())
-                .orElseThrow(() -> new ResourceNotFoundException("Proveedor", updatedProduct.getSupplierId()));
+        Map<String, Object> entities = fetchRelatedEntities(updatedProduct);
 
         // Copiar solo los valores no nulos del objeto actualizado
         if (updatedProduct.getName() != null) existingProduct.setName(updatedProduct.getName());
@@ -89,12 +77,28 @@ public class ProductService {
 
         if (updatedProduct.getExpirationDate() != null) existingProduct.setExpirationDate(updatedProduct.getExpirationDate());
         if (updatedProduct.getImageUrl() != null) existingProduct.setImageUrl(updatedProduct.getImageUrl());
-        if (updatedProduct.getSpeciesId() != null) existingProduct.setSpecies(species);
-        if (updatedProduct.getCategoryId() != null) existingProduct.setCategory(category);
-        if (updatedProduct.getSupplierId() != null) existingProduct.setSupplier(supplier);
+        if (updatedProduct.getSpeciesId() != null) existingProduct.setSpecies((Species) entities.get("species"));
+        if (updatedProduct.getCategoryId() != null) existingProduct.setCategory((Category) entities.get("category"));
+        if (updatedProduct.getSupplierId() != null) existingProduct.setSupplier((Supplier) entities.get("supplier"));
 
         return productRepository.save(existingProduct);
     }
+
+    private Map<String, Object> fetchRelatedEntities(ProductRequestDTO dto) {
+        Species species = speciesRepository.findById(dto.getSpeciesId())
+                .orElseThrow(() -> new ResourceNotFoundException("Especie", dto.getSpeciesId()));
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría", dto.getCategoryId()));
+        Supplier supplier = supplierRepository.findById(dto.getSupplierId())
+                .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()));
+
+        Map<String, Object> entities = new HashMap<>();
+        entities.put("species", species);
+        entities.put("category", category);
+        entities.put("supplier", supplier);
+        return entities;
+    }
+
 
     public void deleteProduct(Integer id) {
         if (!productRepository.existsById(id)) {
