@@ -1,9 +1,11 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "administrators")
 public class Administrator {
@@ -33,10 +35,5 @@ public class Administrator {
 
     // Constructor vacío requerido por JPA
     public Administrator() {}
-
-    // Getters y Setters
-    public Integer getId() {
-        return id;
-    }
 
 }

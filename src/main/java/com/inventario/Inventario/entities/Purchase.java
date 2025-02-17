@@ -1,9 +1,15 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "purchases")
 public class Purchase {
@@ -18,16 +24,6 @@ public class Purchase {
 
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime date;
-
-    // Getters y Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
 }
 
 

@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.inventario.Inventario.entities.CloudinaryAccount;
 import com.inventario.Inventario.repositories.CloudinaryAccountRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,14 +14,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CloudinaryService {
 
     private final CloudinaryAccountRepository accountRepository;
-
-    @Autowired
-    public CloudinaryService(CloudinaryAccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
 
     public Cloudinary getCloudinaryForClient(UUID clientId) {
         CloudinaryAccount account = accountRepository.findById(clientId)

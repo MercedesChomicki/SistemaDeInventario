@@ -1,13 +1,19 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
+@Setter
 @Entity
 @Table(name = "suppliers")
 public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "supplier_id")
+    @Setter(AccessLevel.NONE) // Evita setter solo para el id
     private Integer id;
 
     @Column(nullable = false, length = 100)
@@ -24,48 +30,4 @@ public class Supplier {
 
     @Column(nullable = false, length = 100)
     private String company;
-
-    public Integer getId(){
-        return id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
 }

@@ -11,7 +11,7 @@ import com.inventario.Inventario.repositories.CategoryRepository;
 import com.inventario.Inventario.repositories.ProductRepository;
 import com.inventario.Inventario.repositories.SpeciesRepository;
 import com.inventario.Inventario.repositories.SupplierRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +22,13 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private SpeciesRepository speciesRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private SupplierRepository supplierRepository;
+    private final ProductRepository productRepository;
+    private final SpeciesRepository speciesRepository;
+    private final CategoryRepository categoryRepository;
+    private final SupplierRepository supplierRepository;
 
     /**
      * Obtener todos los productos con opción de ordenación
@@ -53,10 +47,8 @@ public class ProductService {
     public Product createProduct(ProductRequestDTO dto) {
         Species species = speciesRepository.findById(dto.getSpeciesId())
                 .orElseThrow(() -> new ResourceNotFoundException("Especie", dto.getSpeciesId()));
-
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría", dto.getCategoryId()));
-
         Supplier supplier = supplierRepository.findById(dto.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()));
 
@@ -67,7 +59,7 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setExpirationDate(dto.getExpirationDate());
-        product.setImage(dto.getImage());
+        product.setImageUrl(dto.getImageUrl());
         product.setSpecies(species);
         product.setCategory(category);
         product.setSupplier(supplier);
@@ -96,7 +88,7 @@ public class ProductService {
         else existingProduct.setStock(updatedProduct.getStock());
 
         if (updatedProduct.getExpirationDate() != null) existingProduct.setExpirationDate(updatedProduct.getExpirationDate());
-        if (updatedProduct.getImage() != null) existingProduct.setImage(updatedProduct.getImage());
+        if (updatedProduct.getImageUrl() != null) existingProduct.setImageUrl(updatedProduct.getImageUrl());
         if (updatedProduct.getSpeciesId() != null) existingProduct.setSpecies(species);
         if (updatedProduct.getCategoryId() != null) existingProduct.setCategory(category);
         if (updatedProduct.getSupplierId() != null) existingProduct.setSupplier(supplier);

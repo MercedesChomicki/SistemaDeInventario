@@ -4,17 +4,17 @@ import com.inventario.Inventario.dtos.SupplierRequestDTO;
 import com.inventario.Inventario.entities.Supplier;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.SupplierRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SupplierService {
 
-    @Autowired
-    private SupplierRepository supplierRepository;
+    private final SupplierRepository supplierRepository;
 
     public List<Supplier> getAllSuppliersSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);

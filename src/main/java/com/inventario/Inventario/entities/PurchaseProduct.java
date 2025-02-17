@@ -1,7 +1,13 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "purchase_products")
 public class PurchaseProduct {
@@ -24,38 +30,5 @@ public class PurchaseProduct {
 
     @Column(nullable = false)
     private double unit_price;
-
-    // Constructor vacío necesario para JPA
-    public PurchaseProduct() {}
-
-    // Constructor con parámetros
-    public PurchaseProduct(Purchase purchase, Product product, int quantity, double unitPrice) {
-        this.id = new PurchaseProductId(purchase.getId(), product.getId());
-        this.purchase = purchase;
-        this.product = product;
-        this.quantity = quantity;
-        this.unit_price = unitPrice;
-    }
-
-    // Getters y Setters
-    public PurchaseProductId getId() {
-        return id;
-    }
-
-    public Purchase getPurchase() {
-        return purchase;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public double getUnitPrice() {
-        return unit_price;
-    }
 }
 

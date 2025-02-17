@@ -2,7 +2,9 @@ package com.inventario.Inventario.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
+@Getter
 public class SupplierRequestDTO {
 
     @Schema(example = "José")
@@ -24,23 +26,4 @@ public class SupplierRequestDTO {
     @NotBlank
     private String company;
 
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getCompany() {
-        return company;
-    }
 }

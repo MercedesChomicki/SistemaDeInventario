@@ -3,7 +3,7 @@ package com.inventario.Inventario.controllers;
 import com.inventario.Inventario.dtos.ProductRequestDTO;
 import com.inventario.Inventario.entities.Product;
 import com.inventario.Inventario.services.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +17,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    /*private final CloudinaryService cloudinaryService;
-
-    @Autowired
-    public ProductController(CloudinaryService cloudinaryService) {
-        this.cloudinaryService = cloudinaryService;
-    }
+    /* private final CloudinaryService cloudinaryService;
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {

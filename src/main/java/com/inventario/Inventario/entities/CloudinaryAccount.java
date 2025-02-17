@@ -1,11 +1,17 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 import java.util.UUID;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "cloudinary_accounts")
 public class CloudinaryAccount {
@@ -27,42 +33,4 @@ public class CloudinaryAccount {
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
-
-    // Getters y setters...
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getCloudName() {
-        return cloudName;
-    }
-
-    public void setCloudName(String cloudName) {
-        this.cloudName = cloudName;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public String getApiSecret() {
-        return apiSecret;
-    }
-
-    public void setApiSecret(String apiSecret) {
-        this.apiSecret = apiSecret;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 }

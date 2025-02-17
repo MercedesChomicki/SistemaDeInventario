@@ -4,17 +4,17 @@ import com.inventario.Inventario.dtos.SpeciesRequestDTO;
 import com.inventario.Inventario.entities.Species;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.SpeciesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SpeciesService {
 
-    @Autowired
-    private SpeciesRepository speciesRepository;
+    private final SpeciesRepository speciesRepository;
 
     public List<Species> getAllSpeciesSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);

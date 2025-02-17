@@ -1,9 +1,15 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "alerts")
 public class Alert {
@@ -25,11 +31,4 @@ public class Alert {
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime date;
 
-    // Constructor vacío requerido por JPA
-    public Alert() {}
-
-    // Getters y Setters
-    public Integer getId() {
-        return id;
-    }
 }

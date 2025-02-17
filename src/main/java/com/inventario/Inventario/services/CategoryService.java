@@ -4,17 +4,17 @@ import com.inventario.Inventario.dtos.CategoryRequestDTO;
 import com.inventario.Inventario.entities.Category;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<Category> getAllCategoriesSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);

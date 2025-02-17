@@ -1,7 +1,13 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -19,8 +25,4 @@ public class Customer {
 
     @Column(name = "mobile_number", length = 45)
     private String mobileNumber;
-
-    public Integer getId(){
-        return id;
-    }
 }

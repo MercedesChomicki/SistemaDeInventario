@@ -4,7 +4,7 @@ import com.inventario.Inventario.dtos.SupplierRequestDTO;
 import com.inventario.Inventario.entities.Supplier;
 import com.inventario.Inventario.services.SupplierService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/suppliers")
+@RequiredArgsConstructor
 public class SupplierController {
 
-    @Autowired
-    private SupplierService supplierService;
+    private final SupplierService supplierService;
 
     @GetMapping()
     public List<Supplier> getAllSuppliers(

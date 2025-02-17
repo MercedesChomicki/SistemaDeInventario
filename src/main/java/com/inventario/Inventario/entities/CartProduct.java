@@ -1,7 +1,13 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
+@Getter
 @Entity
 @Table(name = "cart_products")
 public class CartProduct {
@@ -24,22 +30,5 @@ public class CartProduct {
 
     @Column(nullable = false)
     private double price;
-
-    // Constructor vacío necesario para JPA
-    public CartProduct() {}
-
-    public CartProduct(Cart cart, Product product, int quantity, double price) {
-        this.id = new CartProductId(cart.getId(), product.getId());
-        this.cart = cart;
-        this.product = product;
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    // Getters y Setters
-    public CartProductId getId() {
-        return id;
-    }
-
 }
 

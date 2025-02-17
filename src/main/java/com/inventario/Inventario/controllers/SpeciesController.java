@@ -3,7 +3,7 @@ package com.inventario.Inventario.controllers;
 import com.inventario.Inventario.dtos.SpeciesRequestDTO;
 import com.inventario.Inventario.entities.Species;
 import com.inventario.Inventario.services.SpeciesService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/species")
+@RequiredArgsConstructor
 public class SpeciesController {
 
-    @Autowired
-    private SpeciesService speciesService;
+    private final SpeciesService speciesService;
 
     /**
      * Obtener todas las especies con opción de ordenación
