@@ -1,9 +1,7 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +16,7 @@ public class Purchase {
     @Column(name = "purchase_id")
     private Integer id;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;

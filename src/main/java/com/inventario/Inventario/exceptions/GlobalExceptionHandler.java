@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("No se puede eliminar porque está siendo referenciado por otros registros.");
     }

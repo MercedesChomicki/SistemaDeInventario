@@ -17,12 +17,9 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    /**
-     * Obtener todas las categorias con opción de ordenación
-     **/
     @GetMapping()
     public List<Category> getAllCategories(
-            @RequestParam(required = false, defaultValue = "name") String sortBy,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
         return categoryService.getAllCategoriesSorted(sortBy, direction);
