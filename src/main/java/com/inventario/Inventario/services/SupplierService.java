@@ -1,13 +1,14 @@
 package com.inventario.Inventario.services;
 
+import com.inventario.Inventario.dtos.SupplierRequestDTO;
 import com.inventario.Inventario.entities.Supplier;
+import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SupplierService {
@@ -21,31 +22,38 @@ public class SupplierService {
         return supplierRepository.findAll(sort);
     }
 
-    public Optional<Supplier> getSupplierById(Integer id) {
-        return supplierRepository.findById(id);
+    public Supplier getSupplierById(Integer id) {
+        return supplierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proveedor", id));
     }
 
-    public Supplier saveSupplier(Supplier supplier) {
+    public Supplier createSupplier(SupplierRequestDTO dto) {
+        Supplier supplier = new Supplier();
+        supplier.setFirstname(dto.getFirstname());
+        supplier.setLastname(dto.getLastname());
+        supplier.setEmail(dto.getEmail());
+        supplier.setPhone(dto.getPhone());
+        supplier.setCompany(dto.getCompany());
         return supplierRepository.save(supplier);
     }
 
-    public Optional<Supplier> updateSupplier(Integer id, Supplier updatedSupplier) {
-        return supplierRepository.findById(id).map(existingSupplier -> {
-            existingSupplier.setFirstname(updatedSupplier.getFirstname());
-            existingSupplier.setLastname(updatedSupplier.getLastname());
-            existingSupplier.setEmail(updatedSupplier.getEmail());
-            existingSupplier.setMobileNumber(updatedSupplier.getMobileNumber());
-            existingSupplier.setCompany(updatedSupplier.getCompany());
-            return supplierRepository.save(existingSupplier);
-        });
+    public Supplier updateSupplier(Integer id, SupplierRequestDTO updatedSupplier) {
+        Supplier existingSupplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proveedor",id));
+        if(updatedSupplier.getFirstname() != null) existingSupplier.setFirstname(updatedSupplier.getFirstname());
+        if(updatedSupplier.getLastname() != null) existingSupplier.setLastname(updatedSupplier.getLastname());
+        if(updatedSupplier.getPhone() != null) existingSupplier.setPhone(updatedSupplier.getPhone());
+        if(updatedSupplier.getEmail() != null) existingSupplier.setEmail(updatedSupplier.getEmail());
+        if(updatedSupplier.getCompany() != null) existingSupplier.setCompany(updatedSupplier.getCompany());
+
+        return supplierRepository.save(existingSupplier);
     }
 
-    public boolean deleteSupplier(Integer id) {
-        if (supplierRepository.existsById(id)) {
-            supplierRepository.deleteById(id);
-            return true;
+    public void deleteSupplier(Integer id) {
+        if (!supplierRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Proveedor", id);
         }
-        return false;
+        supplierRepository.deleteById(id);
     }
 
 }

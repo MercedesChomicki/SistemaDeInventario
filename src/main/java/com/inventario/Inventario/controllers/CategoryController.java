@@ -1,7 +1,7 @@
 package com.inventario.Inventario.controllers;
 
+import com.inventario.Inventario.dtos.CategoryRequestDTO;
 import com.inventario.Inventario.entities.Category;
-import com.inventario.Inventario.exceptions.CategoryNotFoundException;
 import com.inventario.Inventario.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,29 +30,24 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id)));
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Category> saveCategory(@RequestBody Category category) {
-        Category newCategory = categoryService.saveCategory(category);
-        return ResponseEntity.ok(newCategory);
+    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+        Category newCategory = categoryService.createCategory(categoryRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Integer id, @RequestBody Category updatedCategory) {
-        return categoryService.updateCategory(id, updatedCategory)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Category> updateCategory(@PathVariable Integer id, @RequestBody CategoryRequestDTO updatedCategory) {
+        Category updated = categoryService.updateCategory(id, updatedCategory);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable Integer id) {
-        if (categoryService.deleteCategory(id)) {
-            return ResponseEntity.ok("Se ha eliminado exitosamente.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La categoría no se ha podido eliminar.");
-        }
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 }

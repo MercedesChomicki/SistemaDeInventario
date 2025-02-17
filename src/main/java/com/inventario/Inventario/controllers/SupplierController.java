@@ -1,11 +1,13 @@
 package com.inventario.Inventario.controllers;
 
+import com.inventario.Inventario.dtos.SupplierRequestDTO;
 import com.inventario.Inventario.entities.Supplier;
-import com.inventario.Inventario.exceptions.SupplierNotFoundException;
 import com.inventario.Inventario.services.SupplierService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,29 +29,25 @@ public class SupplierController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Supplier> getSupplierById(@PathVariable Integer id) {
-        return ResponseEntity.ok(supplierService.getSupplierById(id)
-                .orElseThrow(() -> new SupplierNotFoundException(id)));
+        return ResponseEntity.ok(supplierService.getSupplierById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Supplier> saveSupplier(@RequestBody Supplier supplier) {
-        Supplier newSupplier = supplierService.saveSupplier(supplier);
-        return ResponseEntity.ok(newSupplier);
+    public ResponseEntity<Supplier> createSupplier(@RequestBody SupplierRequestDTO supplierRequestDTO) {
+        Supplier newSupplier = supplierService.createSupplier(supplierRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newSupplier);
     }
 
+    @Operation
     @PutMapping("/{id}")
-    public ResponseEntity<Supplier> updateSupplier (@PathVariable Integer id, @RequestBody Supplier updatedSupplier) {
-        return supplierService.updateSupplier(id, updatedSupplier)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Supplier> updateSupplier (@PathVariable Integer id, @RequestBody @Validated SupplierRequestDTO updatedSupplier) {
+        Supplier updated = supplierService.updateSupplier(id, updatedSupplier);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSupplier(@PathVariable Integer id) {
-        if (supplierService.deleteSupplier(id)) {
-            return ResponseEntity.ok("Se ha eliminado exitosamente.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El proveedor no se ha podido eliminar.");
-        }
+        supplierService.deleteSupplier(id);
+        return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 }

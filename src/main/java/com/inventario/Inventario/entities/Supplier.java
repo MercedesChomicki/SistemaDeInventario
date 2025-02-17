@@ -16,8 +16,8 @@ public class Supplier {
     @Column(nullable = false, length = 45)
     private String lastname;
 
-    @Column(name = "mobile_number", nullable = false, length = 45)
-    private String mobileNumber;
+    @Column(name = "phone", nullable = false, length = 45)
+    private String phone;
 
     @Column(nullable = false, length = 100)
     private String email;
@@ -45,12 +45,12 @@ public class Supplier {
         this.lastname = lastname;
     }
 
-    public String getMobileNumber() {
-        return mobileNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmail() {

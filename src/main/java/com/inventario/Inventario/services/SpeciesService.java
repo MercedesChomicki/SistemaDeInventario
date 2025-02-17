@@ -1,13 +1,14 @@
 package com.inventario.Inventario.services;
 
+import com.inventario.Inventario.dtos.SpeciesRequestDTO;
 import com.inventario.Inventario.entities.Species;
+import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.SpeciesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SpeciesService {
@@ -21,26 +22,30 @@ public class SpeciesService {
         return speciesRepository.findAll(sort);
     }
 
-    public Optional<Species> getSpeciesById(Integer id) {
-        return speciesRepository.findById(id);
+    public Species getSpeciesById(Integer id) {
+        return speciesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Especie", id));
     }
 
-    public Species saveSpecies(Species species) {
+    public Species createSpecies(SpeciesRequestDTO dto) {
+        Species species = new Species();
+        species.setName(dto.getName());
         return speciesRepository.save(species);
     }
 
-    public Optional<Species> updateSpecies(Integer id, Species updatedSpecies) {
-        return speciesRepository.findById(id).map(existingSpecies -> {
-            existingSpecies.setName(updatedSpecies.getName());
-            return speciesRepository.save(existingSpecies);
-        });
+    public Species updateSpecies(Integer id, SpeciesRequestDTO updatedSpecies) {
+        Species existingSpecies = speciesRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Especie", id));
+
+        if (updatedSpecies.getName() != null) existingSpecies.setName(updatedSpecies.getName());
+
+        return speciesRepository.save(existingSpecies);
     }
 
-    public boolean deleteSpecies(Integer id) {
-        if (speciesRepository.existsById(id)) {
-            speciesRepository.deleteById(id);
-            return true;
+    public void deleteSpecies(Integer id) {
+        if (!speciesRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Especie", id);
         }
-        return false;
+        speciesRepository.deleteById(id);
     }
 }

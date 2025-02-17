@@ -25,7 +25,7 @@ public class Administrator {
     @Column(nullable = false, length = 32)
     private String password;
 
-    @Column(name = "mobile_number", length = 45)
+    @Column(name = "phone", length = 45)
     private String mobileNumber;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
