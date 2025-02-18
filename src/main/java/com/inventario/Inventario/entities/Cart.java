@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.*;
 
 @NoArgsConstructor  // Crea un constructor vacío
 @AllArgsConstructor // Crea un constructor con todos los atributos
@@ -22,4 +22,9 @@ public class Cart {
     @Setter
     @Column(nullable = false, name = "creation_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime creationDate;
+
+    @PrePersist
+    public void prePersist() {
+        this.creationDate = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
+    }
 }
