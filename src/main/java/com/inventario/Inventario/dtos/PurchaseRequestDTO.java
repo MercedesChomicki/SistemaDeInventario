@@ -12,7 +12,4 @@ public class PurchaseRequestDTO {
     @Schema(example = "1")
     @NotNull
     private Integer supplierId;
-
-    @NotNull
-    private LocalDateTime date;
 }

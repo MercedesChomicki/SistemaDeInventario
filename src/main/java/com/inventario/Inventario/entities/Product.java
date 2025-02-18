@@ -38,7 +38,7 @@ public class Product {
     @Temporal(TemporalType.DATE)
     private LocalDate expirationDate;
 
-    @Column(name = "image_url", length = 255)
+    @Column(name = "image_url", length = 254)
     private String imageUrl;
 
     @ManyToOne
@@ -52,4 +52,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
+
+    // Método para calcular el precio con tarjeta (si se necesita)
+    public BigDecimal getPriceWithCard(BigDecimal cardPercentageIncrease) {
+        return this.price.add(this.price.multiply(cardPercentageIncrease).divide(BigDecimal.valueOf(100)));
+    }
 }

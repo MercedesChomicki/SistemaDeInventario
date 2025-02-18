@@ -1,18 +1,18 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor  // Crea un constructor vacío
 @AllArgsConstructor // Crea un constructor con todos los atributos
 @Getter
+@Setter
 @Entity
 @Table(name = "cart_products")
 public class CartProduct {
 
     @EmbeddedId
+    @Setter(AccessLevel.NONE)
     private CartProductId id;
 
     @ManyToOne

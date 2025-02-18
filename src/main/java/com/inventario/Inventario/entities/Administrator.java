@@ -1,11 +1,16 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
+@NoArgsConstructor  // Crea un constructor vacío
+@AllArgsConstructor // Crea un constructor con todos los atributos
 @Getter
+@Setter
 @Entity
 @Table(name = "administrators")
 public class Administrator {
@@ -13,6 +18,7 @@ public class Administrator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id")
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(nullable = false, length = 100)
@@ -27,13 +33,16 @@ public class Administrator {
     @Column(nullable = false, length = 32)
     private String password;
 
-    @Column(name = "phone", length = 45)
-    private String mobileNumber;
+    @Column(length = 45)
+    private String phone;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Setter(AccessLevel.NONE)
     private LocalDateTime registration_time;
 
-    // Constructor vacío requerido por JPA
-    public Administrator() {}
+    @PrePersist
+    public void prePersist() {
+        this.registration_time = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
+    }
 
 }

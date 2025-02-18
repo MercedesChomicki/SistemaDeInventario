@@ -37,6 +37,7 @@ public class PurchaseService {
 
         Purchase purchase = new Purchase();
         purchase.setSupplier((Supplier) entities.get("supplier"));
+
         return purchaseRepository.save(purchase);
     }
 

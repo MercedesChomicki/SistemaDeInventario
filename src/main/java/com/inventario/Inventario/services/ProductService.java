@@ -106,21 +106,5 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
-
-    /** Como usuario quiero poder generar un reporte en cualquier momento
-    para saber qué productos y qué cantidad de cada uno se va vendiendo en el día,
-    con la posibilidad de ordenarlos de menor a mayor o de mayor a menor
-    */
-    public List<Object[]> getSalesReportByDate(LocalDate date, boolean asc) {
-        LocalDateTime startDate = date.atStartOfDay();
-        LocalDateTime endDate = date.atTime(23, 59, 59);
-
-        List<Object[]> results = productRepository.getSalesReportByDate(startDate, endDate);
-        results.sort(Comparator.comparing(o -> (Integer) o[1])); // Ordena por cantidad vendida
-
-        if (!asc) Collections.reverse(results); // Si quiere orden descendente, lo invierte
-
-        return results;
-    }
 }
 

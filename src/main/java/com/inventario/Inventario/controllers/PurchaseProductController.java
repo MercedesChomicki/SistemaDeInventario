@@ -1,7 +1,9 @@
 package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.PurchaseProductRequestDTO;
+import com.inventario.Inventario.dtos.PurchaseProductResponseDTO;
 import com.inventario.Inventario.entities.PurchaseProduct;
+import com.inventario.Inventario.entities.PurchaseProductId;
 import com.inventario.Inventario.services.PurchaseProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,15 +20,19 @@ public class PurchaseProductController {
     private final PurchaseProductService purchaseProductService;
 
     @GetMapping()
-    public List<PurchaseProduct> getAllPurchaseProducts(
+    public List<PurchaseProductResponseDTO> getAllPurchaseProducts(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
         return purchaseProductService.getAllPurchaseProductsSorted(sortBy, direction);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PurchaseProduct> getPurchaseProductById(@PathVariable Integer id) {
+    @GetMapping("/{purchaseId}/{productId}")
+    public ResponseEntity<PurchaseProductResponseDTO> getPurchaseProductById(
+            @PathVariable Integer purchaseId,
+            @PathVariable Integer productId
+    ) {
+        PurchaseProductId id = new PurchaseProductId(purchaseId, productId);
         return ResponseEntity.ok(purchaseProductService.getPurchaseProductById(id));
     }
 
@@ -36,14 +42,23 @@ public class PurchaseProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newPurchaseProduct);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PurchaseProduct> updatePurchaseProduct(@PathVariable Integer id, @RequestBody PurchaseProductRequestDTO updatedPurchaseProduct) {
-        PurchaseProduct updated = purchaseProductService.updatePurchaseProduct(id, updatedPurchaseProduct);
+    @PutMapping("/{purchaseId}/{productId}")
+    public ResponseEntity<PurchaseProductResponseDTO> updatePurchaseProduct(
+            @PathVariable Integer purchaseId,
+            @PathVariable Integer productId,
+            @RequestBody PurchaseProductRequestDTO updatedPurchaseProduct
+    ) {
+        PurchaseProductId id = new PurchaseProductId(purchaseId, productId);
+        PurchaseProductResponseDTO updated = purchaseProductService.updatePurchaseProduct(id, updatedPurchaseProduct);
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePurchaseProduct(@PathVariable Integer id) {
+    @DeleteMapping("/{purchaseId}/{productId}")
+    public ResponseEntity<String> deletePurchaseProduct(
+            @PathVariable Integer purchaseId,
+            @PathVariable Integer productId
+    ) {
+        PurchaseProductId id = new PurchaseProductId(purchaseId, productId);
         purchaseProductService.deletePurchaseProduct(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }

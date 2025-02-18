@@ -31,6 +31,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("No se puede eliminar porque está siendo referenciado por otros registros.");
+                .body("Error: No se puede completar la operación debido a una restricción de integridad.");
     }
 }

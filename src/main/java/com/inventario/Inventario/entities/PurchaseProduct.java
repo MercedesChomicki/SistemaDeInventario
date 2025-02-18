@@ -12,7 +12,6 @@ import lombok.*;
 public class PurchaseProduct {
 
     @EmbeddedId
-    @Setter(AccessLevel.NONE)
     private PurchaseProductId id;
 
     @ManyToOne

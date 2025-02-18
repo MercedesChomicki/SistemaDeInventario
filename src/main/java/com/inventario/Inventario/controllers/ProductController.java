@@ -49,7 +49,7 @@ public class ProductController {
      **/
     @GetMapping()
     public List<Product> getAllProducts(
-            @RequestParam(required = false, defaultValue = "name") String sortBy,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
         return productService.getAllProductsSorted(sortBy, direction);
@@ -78,26 +78,5 @@ public class ProductController {
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 
-    /** Como usuario quiero poder generar un reporte en cualquier momento
-     para saber qué productos y qué cantidad de cada uno se va vendiendo en el día,
-     con la posibilidad de ordenarlos de menor a mayor o de mayor a menor
-     */
-    @GetMapping("/sales-report")
-    public ResponseEntity<List<Map<String, Object>>> getDailySalesReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(defaultValue = "false") boolean asc
-    ) {
-        List<Object[]> report = productService.getSalesReportByDate(date, asc);
-
-        // Convertir la lista de Object[] a lista de Map<String, Object> para que sea más clara en JSON
-        List<Map<String, Object>> response = report.stream().map(obj -> {
-            Map<String, Object> item = new HashMap<>();
-            item.put("product", obj[0]);
-            item.put("quantity", ((Number) obj[1]).longValue());
-            return item;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(response);
-    }
 }
 
