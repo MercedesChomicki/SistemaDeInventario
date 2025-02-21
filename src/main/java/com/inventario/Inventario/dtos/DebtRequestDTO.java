@@ -1,5 +1,6 @@
 package com.inventario.Inventario.dtos;
 
+import com.inventario.Inventario.entities.Sale;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,12 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor  // Crea un constructor vacío
 @AllArgsConstructor // Crea un constructor con todos los atributos
 @Getter
 public class DebtRequestDTO {
-
     @Schema(example = "1")
     @NotNull
     private Integer customerId;
