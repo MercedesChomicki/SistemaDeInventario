@@ -6,23 +6,21 @@ import com.inventario.Inventario.entities.Customer;
 import com.inventario.Inventario.entities.Debt;
 
 import com.inventario.Inventario.entities.Sale;
-import com.inventario.Inventario.entities.SaleStatus;
 import com.inventario.Inventario.exceptions.DebtPaidException;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
+import com.inventario.Inventario.mappers.DebtMapper;
 import com.inventario.Inventario.repositories.DebtRepository;
 import com.inventario.Inventario.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.inventario.Inventario.services.SaleService.CARD_SURCHARGE_PERCENTAGE;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,29 +28,15 @@ public class DebtService {
 
     private final DebtRepository debtRepository;
     private final CustomerRepository customerRepository;
+    private final DebtMapper debtMapper;
 
     public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
         List<Debt> debts = debtRepository.findAll(sort);
-        ArrayList<DebtResponseDTO> listDTO = new ArrayList<>();
-        for(Debt debt : debts){
-            DebtResponseDTO dto= convertToDTO(debt);
-            listDTO.add(dto);
-        }
-        return listDTO;
-    }
-
-    private DebtResponseDTO convertToDTO(Debt debt) {
-        DebtResponseDTO dto = new DebtResponseDTO();
-        dto.setId(debt.getId());
-        dto.setCustomerId(debt.getCustomer().getId());
-        dto.setAmountTotal(debt.getAmountTotal());
-        dto.setAmountDue(debt.getAmountDue());
-        dto.setAmountPaid(debt.getAmountPaid());
-        dto.setCreatedAt(debt.getCreatedAt());
-        dto.setUpdatedAt(debt.getUpdatedAt());
-        return dto;
+        return debts.stream()
+                .map(debtMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Debt getDebtById(Integer id) {
@@ -84,7 +68,7 @@ public class DebtService {
                 .orElseThrow(() -> new ResourceNotFoundException("Deuda de cliente", id));
 
         // Aplicar recargo si no se paga en efectivo
-        applySurchargeIfNeeded(debt, incash);
+        debt.applySurchargeIfNeeded(incash);
 
         if(amount.compareTo(debt.getAmountDue()) > 0){
             throw new IllegalArgumentException("El monto ingresado supera a la deuda.");
@@ -92,13 +76,13 @@ public class DebtService {
 
         if(amount.compareTo(debt.getAmountDue()) == 0) {
             // Deuda saldada
-            markSalesAsPaid((ArrayList<Sale>) debt.getSales());
+            markSalesAsPaid(debt.getSales());
             deleteDebt(id);
             throw new DebtPaidException("La deuda ha sido completamente pagada y eliminada.");
         }
 
         // Pago parcial
-        processPartialPayment(debt, amount);
+        debt.processPartialPayment(amount);
 
         // TODO Agregar el monto pagado (amount) al atributo debtsPaid de la tabla reportes cuando esté
 
@@ -114,39 +98,9 @@ public class DebtService {
         return debtRepository.save(debt);
     }
 
-    // Método para aplicar recargo si no se paga en efectivo
-    private void applySurchargeIfNeeded(Debt debt, boolean incash) {
-        if (!incash) {
-            BigDecimal surcharge = debt.getAmountDue()
-                    .multiply(CARD_SURCHARGE_PERCENTAGE)
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            debt.setAmountDue(debt.getAmountDue().add(surcharge));
-            debt.setAmountTotal(debt.getAmountTotal().add(surcharge));
-        }
-    }
-
     // Método para marcar las ventas asociadas como pagadas
-    private void markSalesAsPaid(ArrayList<Sale> sales) {
-        for (Sale sale : sales) {
-            sale.setStatus(SaleStatus.PAID);
-        }
-    }
-
-    // Método para procesar un pago parcial
-    private void processPartialPayment(Debt debt, BigDecimal amount) {
-        debt.setAmountPaid(debt.getAmountPaid().add(amount));
-        debt.setAmountDue(debt.getAmountDue().subtract(amount));
-
-        BigDecimal remainingAmount = amount;
-        for (Sale sale : debt.getSales()) {
-            BigDecimal amountDebt = sale.getTotal().subtract(sale.getPayInCash());
-            if (remainingAmount.compareTo(amountDebt) >= 0) {
-                sale.setStatus(SaleStatus.PAID);
-                remainingAmount = remainingAmount.subtract(amountDebt);
-            } else {
-                break; // Si no se cubre la deuda total de una venta, se detiene
-            }
-        }
+    private void markSalesAsPaid(List<Sale> sales) {
+        sales.forEach(Sale::markAsPaid);
     }
 
     private Map<String, Object> fetchRelatedEntities(DebtRequestDTO dto) {
@@ -159,9 +113,10 @@ public class DebtService {
     }
 
     private void deleteDebt(Integer id) {
-        if (!debtRepository.existsById(id)) {
+        try {
+            debtRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException("Deuda de cliente", id);
         }
-        debtRepository.deleteById(id);
     }
 }

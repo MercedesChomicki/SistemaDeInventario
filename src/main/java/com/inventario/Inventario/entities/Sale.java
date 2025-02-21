@@ -54,4 +54,8 @@ public class Sale {
     public void prePersist() {
         this.date = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
     }
+
+    public void markAsPaid() {
+        this.status = SaleStatus.PAID;
+    }
 }
