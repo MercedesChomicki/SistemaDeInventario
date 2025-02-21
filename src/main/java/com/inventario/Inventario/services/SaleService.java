@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SaleService {
 
-    private static final BigDecimal CARD_SURCHARGE_PERCENTAGE = BigDecimal.valueOf(7); // 7% adicional por pago con tarjeta
+    public static final BigDecimal CARD_SURCHARGE_PERCENTAGE = BigDecimal.valueOf(7); // 7% adicional por pago con tarjeta
 
     private final SaleRepository saleRepository;
     private final SaleDetailRepository saleDetailRepository;
@@ -60,6 +61,7 @@ public class SaleService {
 
         sale.setTotal(total);
         sale.setDetails(details);
+        saleRepository.save(sale);
 
         return convertToDTO(sale);
     }
@@ -116,7 +118,9 @@ public class SaleService {
 
         switch (paymentMethod) {
             case CARD -> {
-                BigDecimal surcharge = total.multiply(CARD_SURCHARGE_PERCENTAGE).divide(BigDecimal.valueOf(100));
+                BigDecimal surcharge = total
+                        .multiply(CARD_SURCHARGE_PERCENTAGE)
+                        .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 sale.setPayInCash(BigDecimal.ZERO);
                 sale.setPayByCard(total.add(surcharge));
                 total = sale.getPayByCard();
@@ -129,7 +133,9 @@ public class SaleService {
                     throw new IllegalArgumentException("El pago en efectivo no puede ser mayor o igual al total.");
                 }
                 BigDecimal rest = total.subtract(paidInCash);
-                BigDecimal surcharge = rest.multiply(CARD_SURCHARGE_PERCENTAGE).divide(BigDecimal.valueOf(100));
+                BigDecimal surcharge = rest.
+                        multiply(CARD_SURCHARGE_PERCENTAGE)
+                        .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 sale.setPayInCash(paidInCash);
                 sale.setPayByCard(rest.add(surcharge));
                 total = sale.getPayInCash().add(sale.getPayByCard());

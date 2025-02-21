@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -40,6 +41,24 @@ public class DebtController {
     @PutMapping("/{id}")
     public ResponseEntity<Debt> updateDebt(@PathVariable Integer id, @RequestBody DebtRequestDTO updatedDebt) {
         Debt updated = debtService.updateDebt(id, updatedDebt);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
+    public ResponseEntity<Debt> payDebt(
+            @PathVariable  Integer id,
+            @PathVariable boolean incash,
+            @PathVariable BigDecimal amount){
+        Debt updated = debtService.payDebt(id, incash, amount);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
+    public ResponseEntity<Debt> payDebtWithSurcharge(
+            @PathVariable  Integer id,
+            @PathVariable boolean incash,
+            @PathVariable BigDecimal amount){
+        Debt updated = debtService.payDebtWithSurcharge(id, incash, amount);
         return ResponseEntity.ok(updated);
     }
 

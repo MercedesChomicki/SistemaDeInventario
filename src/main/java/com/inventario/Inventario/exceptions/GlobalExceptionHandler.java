@@ -33,4 +33,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("Error: No se puede completar la operación debido a una restricción de integridad.");
     }
+
+    @ExceptionHandler(DebtPaidException.class)
+    public ResponseEntity<String> handleDebtPaidException(DebtPaidException e) {
+        return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
+    }
+
 }
