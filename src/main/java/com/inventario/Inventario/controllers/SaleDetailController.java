@@ -1,8 +1,8 @@
 package com.inventario.Inventario.controllers;
 
-import com.inventario.Inventario.dtos.CartProductRequestDTO;
-import com.inventario.Inventario.entities.CartProduct;
-import com.inventario.Inventario.services.CartProductService;
+import com.inventario.Inventario.dtos.SaleDetailRequestDTO;
+import com.inventario.Inventario.entities.SaleDetail;
+import com.inventario.Inventario.services.SaleDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,40 +16,40 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/cart_products")
+@RequestMapping("/sale_details")
 @RequiredArgsConstructor
-public class CartProductController {
+public class SaleDetailController {
 
-    private final CartProductService cartProductService;
+    private final SaleDetailService saleDetailService;
 
     @GetMapping()
-    public List<CartProduct> getAllCartProducts(
+    public List<SaleDetail> getAllSaleDetails(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
-        return cartProductService.getAllCartProductsSorted(sortBy, direction);
+        return saleDetailService.getAllSaleDetailsSorted(sortBy, direction);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CartProduct> getCartProductById(@PathVariable Integer id) {
-        return ResponseEntity.ok(cartProductService.getCartProductById(id));
+    public ResponseEntity<SaleDetail> getSaleDetailById(@PathVariable Long id) {
+        return ResponseEntity.ok(saleDetailService.getSaleDetailById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CartProduct> createCartProduct(@RequestBody CartProductRequestDTO cartProductRequestDTO) {
-        CartProduct newCartProduct = cartProductService.createCartProduct(cartProductRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newCartProduct);
+    public ResponseEntity<SaleDetail> createSaleDetail(@RequestBody SaleDetailRequestDTO saleDetailRequestDTO) {
+        SaleDetail newSaleDetail = saleDetailService.createSaleDetail(saleDetailRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newSaleDetail);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CartProduct> updateCartProduct(@PathVariable Integer id, @RequestBody CartProductRequestDTO updatedCartProduct) {
-        CartProduct updated = cartProductService.updateCartProduct(id, updatedCartProduct);
+    public ResponseEntity<SaleDetail> updateSaleDetail(@PathVariable Long id, @RequestBody SaleDetailRequestDTO saleDetailRequestDTO) {
+        SaleDetail updated = saleDetailService.updateSaleDetail(id, saleDetailRequestDTO);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCartProduct(@PathVariable Integer id) {
-        cartProductService.deleteCartProduct(id);
+    public ResponseEntity<String> deleteSaleDetail(@PathVariable Long id) {
+        saleDetailService.deleteSaleDetail(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 
@@ -62,7 +62,7 @@ public class CartProductController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(defaultValue = "false") boolean asc
     ) {
-        List<Object[]> report = cartProductService.getSalesReportByDate(date, asc);
+        List<Object[]> report = saleDetailService.getSalesReportByDate(date, asc);
 
         // Convertir la lista de Object[] a lista de Map<String, Object> para que sea más clara en JSON
         List<Map<String, Object>> response = report.stream().map(obj -> {

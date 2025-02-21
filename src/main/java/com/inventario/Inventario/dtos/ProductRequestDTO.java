@@ -26,18 +26,18 @@ public class ProductRequestDTO {
     @Schema(example = "6000")
     @NotNull
     @Positive
-    private BigDecimal price;
+    private BigDecimal cashPrice;
 
     @Schema(example = "10")
     @NotNull
     @Min(0)
     private int stock;
 
-    @Schema(example = "2026-02-15")
-    private LocalDate expirationDate;
-
     @Schema(example = "null")
     private String imageUrl;
+
+    @Schema(example = "2026-02-15")
+    private LocalDate expirationDate;
 
     @Schema(example = "1")
     @NotNull

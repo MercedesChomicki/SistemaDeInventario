@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor // Crea un constructor con todos los atributos
 @Getter
 @Setter
+@ToString(onlyExplicitlyIncluded = true)  // Solo incluye los campos especificados
 @Entity
 @Table(name = "products")
 public class Product {
@@ -18,28 +19,34 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     @Setter(AccessLevel.NONE)
+    @ToString.Include // Incluir en toString
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 45)
+    @ToString.Include // Incluir en toString
     private String code;
 
     @Column(nullable = false, length = 200)
+    @ToString.Include // Incluir en toString
     private String name;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    @Column(name = "cash_price", nullable = false, precision = 10, scale = 2)
+    @ToString.Include // Incluir en toString
+    private BigDecimal cashPrice;
 
     @Column(nullable = false)
+    @ToString.Include // Incluir en toString
     private int stock;
-
-    @Temporal(TemporalType.DATE)
-    private LocalDate expirationDate;
 
     @Column(name = "image_url", length = 254)
     private String imageUrl;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    private LocalDate expirationDate;
 
     @ManyToOne
     @JoinColumn(name = "species_id", nullable = false)
@@ -55,6 +62,6 @@ public class Product {
 
     // Método para calcular el precio con tarjeta (si se necesita)
     public BigDecimal getPriceWithCard(BigDecimal cardPercentageIncrease) {
-        return this.price.add(this.price.multiply(cardPercentageIncrease).divide(BigDecimal.valueOf(100)));
+        return this.cashPrice.add(this.cashPrice.multiply(cardPercentageIncrease).divide(BigDecimal.valueOf(100)));
     }
 }

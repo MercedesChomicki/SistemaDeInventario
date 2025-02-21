@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -28,9 +26,6 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
 
-    /**
-     * Obtener todos los productos con opción de ordenación
-     **/
     public List<Product> getAllProductsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
@@ -49,7 +44,7 @@ public class ProductService {
         product.setCode(dto.getCode());
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
+        product.setCashPrice(dto.getCashPrice());
         product.setStock(dto.getStock());
         product.setExpirationDate(dto.getExpirationDate());
         product.setImageUrl(dto.getImageUrl());
@@ -70,7 +65,7 @@ public class ProductService {
         if (updatedProduct.getName() != null) existingProduct.setName(updatedProduct.getName());
         if (updatedProduct.getCode() != null) existingProduct.setCode(updatedProduct.getCode());
         if (updatedProduct.getDescription() != null) existingProduct.setDescription(updatedProduct.getDescription());
-        if (updatedProduct.getPrice() != null) existingProduct.setPrice(updatedProduct.getPrice());
+        if (updatedProduct.getCashPrice() != null) existingProduct.setCashPrice(updatedProduct.getCashPrice());
 
         if (updatedProduct.getStock() <= 0) throw new BusinessException("El stock debe ser mayor a 0.");
         else existingProduct.setStock(updatedProduct.getStock());

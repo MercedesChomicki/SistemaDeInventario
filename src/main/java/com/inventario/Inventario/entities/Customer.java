@@ -23,6 +23,6 @@ public class Customer {
     @Column(nullable = false, length = 100)
     private String lastname;
 
-    @Column(length = 45)
+    @Column(length = 45, unique = true)
     private String phone;
 }
