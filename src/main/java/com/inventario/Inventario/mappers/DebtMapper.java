@@ -1,7 +1,6 @@
 package com.inventario.Inventario.mappers;
 
 import com.inventario.Inventario.dtos.DebtDetailResponseDTO;
-import com.inventario.Inventario.dtos.DebtRequestDTO;
 import com.inventario.Inventario.dtos.DebtResponseDTO;
 import com.inventario.Inventario.entities.Debt;
 import com.inventario.Inventario.entities.DebtDetail;
@@ -22,5 +21,5 @@ public interface DebtMapper {
     DebtDetailResponseDTO toDTO(DebtDetail debtDetail);
 
     @Mapping(target = "id", ignore = true) // Opcional: Para evitar sobrescribir IDs
-    Debt toEntity(DebtRequestDTO dto);
+    Debt toEntity(DebtResponseDTO dto);
 }

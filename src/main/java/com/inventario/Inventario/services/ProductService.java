@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @Service
@@ -111,7 +113,6 @@ public class ProductService {
 
     @Transactional
     public void decreaseStock(Product product, int quantity) {
-
         product.setStock(product.getStock() - quantity);
     }
 
@@ -119,6 +120,25 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
         product.setStock(product.getStock() + quantity);
+        Product updated = productRepository.save(product);
+        return productMapper.toDTO(updated);
+    }
+
+    public ProductResponseDTO increasePrice(Integer id, BigDecimal newPrice) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+        if (newPrice != null) product.setCashPrice(newPrice);
+        Product updated = productRepository.save(product);
+        return productMapper.toDTO(updated);
+    }
+
+    public ProductResponseDTO increasePriceWithPercentage(Integer id, BigDecimal percentage) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+        if(percentage != null) {
+            BigDecimal percentageIncrease = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+            product.setCashPrice(product.getCashPrice().multiply(percentageIncrease));
+        }
         Product updated = productRepository.save(product);
         return productMapper.toDTO(updated);
     }

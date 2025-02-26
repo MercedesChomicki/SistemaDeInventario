@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.inventario.Inventario.constants.Constant.SURCHARGE_PERCENTAGE;
+
 @Service
 @RequiredArgsConstructor
 public class SaleService {
-
-    public static final BigDecimal SURCHARGE_PERCENTAGE = BigDecimal.valueOf(7); // 7% adicional por pago con tarjeta
 
     private final SaleRepository saleRepository;
     private final SaleDetailRepository saleDetailRepository;

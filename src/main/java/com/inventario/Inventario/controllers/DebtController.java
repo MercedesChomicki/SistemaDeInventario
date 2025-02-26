@@ -38,6 +38,12 @@ public class DebtController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newDebt);
     }
 
+    @PatchMapping("/update-debt-values/debt/{id}")
+    public ResponseEntity<DebtResponseDTO> updateDebtValues(@PathVariable Integer id) {
+        DebtResponseDTO updated = debtService.updateDebtValues(id);
+        return ResponseEntity.ok(updated);
+    }
+
     @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
     public ResponseEntity<?> payDebt(
             @PathVariable  Integer id,

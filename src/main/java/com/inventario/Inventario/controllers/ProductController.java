@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -52,11 +53,27 @@ public class ProductController {
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 
-    @PatchMapping("/{id}/quantity/{quantity}")
+    @PatchMapping("/increase-stock/product/{id}/quantity/{quantity}")
     public ResponseEntity<ProductResponseDTO> increaseStock(
             @PathVariable Integer id,
             @PathVariable Integer quantity) {
         ProductResponseDTO updated = productService.increaseStock(id, quantity);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/increase-price/product/{id}/newPrice/{newPrice}")
+    public ResponseEntity<ProductResponseDTO> increasePrice(
+            @PathVariable Integer id,
+            @PathVariable BigDecimal newPrice) {
+        ProductResponseDTO updated = productService.increasePrice(id, newPrice);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/increase-price-w-percentage/product/{id}/percentaje/{percentaje}")
+    public ResponseEntity<ProductResponseDTO> increasePriceWithPercentage(
+            @PathVariable Integer id,
+            @PathVariable BigDecimal percentaje) {
+        ProductResponseDTO updated = productService.increasePriceWithPercentage(id, percentaje);
         return ResponseEntity.ok(updated);
     }
 
