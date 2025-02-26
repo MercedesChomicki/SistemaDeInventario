@@ -19,7 +19,7 @@ public class CustomerController {
 
     @GetMapping()
     public List<Customer> getAllCustomers(
-            @RequestParam(required = false, defaultValue = "name") String sortBy,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
         return customerService.getAllCustomersSorted(sortBy, direction);

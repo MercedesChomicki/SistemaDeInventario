@@ -2,7 +2,6 @@ package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.DebtRequestDTO;
 import com.inventario.Inventario.dtos.DebtResponseDTO;
-import com.inventario.Inventario.entities.Debt;
 import com.inventario.Inventario.services.DebtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/debts")
@@ -28,43 +28,30 @@ public class DebtController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Debt> getDebtById(@PathVariable Integer id) {
+    public ResponseEntity<DebtResponseDTO> getDebtById(@PathVariable Integer id) {
         return ResponseEntity.ok(debtService.getDebtById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Debt> createDebt(@RequestBody DebtRequestDTO debtRequestDTO) {
-        Debt newDebt = debtService.createDebt(debtRequestDTO);
+    public ResponseEntity<DebtResponseDTO> createDebt(@RequestBody DebtRequestDTO debtRequestDTO) {
+        DebtResponseDTO newDebt = debtService.createDebt(debtRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newDebt);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Debt> updateDebt(@PathVariable Integer id, @RequestBody DebtRequestDTO updatedDebt) {
-        Debt updated = debtService.updateDebt(id, updatedDebt);
-        return ResponseEntity.ok(updated);
-    }
-
     @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
-    public ResponseEntity<Debt> payDebt(
+    public ResponseEntity<?> payDebt(
             @PathVariable  Integer id,
             @PathVariable boolean incash,
             @PathVariable BigDecimal amount){
-        Debt updated = debtService.payDebt(id, incash, amount);
-        return ResponseEntity.ok(updated);
+        DebtResponseDTO updated = debtService.payDebt(id, incash, amount);
+
+        return ResponseEntity.ok(Objects.requireNonNullElse(updated,
+                "La deuda ha sido completamente saldada."));
     }
 
-    @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
-    public ResponseEntity<Debt> payDebtWithSurcharge(
-            @PathVariable  Integer id,
-            @PathVariable boolean incash,
-            @PathVariable BigDecimal amount){
-        Debt updated = debtService.payDebtWithSurcharge(id, incash, amount);
-        return ResponseEntity.ok(updated);
-    }
-
-    /*@DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDebt(@PathVariable Integer id) {
         debtService.deleteDebt(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
-    }*/
+    }
 }

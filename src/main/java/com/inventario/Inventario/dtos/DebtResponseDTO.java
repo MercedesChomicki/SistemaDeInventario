@@ -1,6 +1,6 @@
 package com.inventario.Inventario.dtos;
 
-import com.inventario.Inventario.entities.Sale;
+import com.inventario.Inventario.entities.DebtStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,9 +13,11 @@ import java.util.List;
 public class DebtResponseDTO {
     private Integer id;
     private Integer customerId;
+    private List<DebtDetailResponseDTO> details;
     private BigDecimal amountTotal;
     private BigDecimal amountDue;
     private BigDecimal amountPaid;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private DebtStatus status;
 }

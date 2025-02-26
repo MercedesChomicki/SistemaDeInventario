@@ -25,37 +25,17 @@ public class Sale {
     @Column(nullable = false)
     private BigDecimal total;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentMethod paymentMethod = PaymentMethod.CASH;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SaleStatus status = SaleStatus.PAID;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime date;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleDetail> details;
 
-    @ManyToOne
-    @JoinColumn(name = "debt_id")
-    private Debt debt;
-
-    // Para el caso en el que quiera pagar mixto
-    @Column(name = "paid_in_cash")
-    private BigDecimal payInCash;
-
-    @Column(name = "paid_by_card")
-    private BigDecimal payByCard = BigDecimal.ZERO;
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SalePayment> payments;
 
     @PrePersist
     public void prePersist() {
         this.date = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
-    }
-
-    public void markAsPaid() {
-        this.status = SaleStatus.PAID;
     }
 }

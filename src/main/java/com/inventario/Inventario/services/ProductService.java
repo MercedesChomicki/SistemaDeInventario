@@ -1,16 +1,19 @@
 package com.inventario.Inventario.services;
 
 import com.inventario.Inventario.dtos.ProductRequestDTO;
+import com.inventario.Inventario.dtos.ProductResponseDTO;
 import com.inventario.Inventario.entities.Category;
 import com.inventario.Inventario.entities.Product;
 import com.inventario.Inventario.entities.Species;
 import com.inventario.Inventario.entities.Supplier;
 import com.inventario.Inventario.exceptions.BusinessException;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
+import com.inventario.Inventario.mappers.ProductMapper;
 import com.inventario.Inventario.repositories.CategoryRepository;
 import com.inventario.Inventario.repositories.ProductRepository;
 import com.inventario.Inventario.repositories.SpeciesRepository;
 import com.inventario.Inventario.repositories.SupplierRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,15 @@ public class ProductService {
     private final SpeciesRepository speciesRepository;
     private final CategoryRepository categoryRepository;
     private final SupplierRepository supplierRepository;
+    private final ProductMapper productMapper;
 
-    public List<Product> getAllProductsSorted(String sortBy, String direction) {
+    public List<ProductResponseDTO> getAllProductsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
-        return productRepository.findAll(sort);
+        return productRepository.findAll(sort)
+                .stream()
+                .map(productMapper::toDTO)
+                .toList();
     }
 
     public Product getProductById(Integer id) {
@@ -101,5 +108,20 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
+
+    @Transactional
+    public void decreaseStock(Product product, int quantity) {
+
+        product.setStock(product.getStock() - quantity);
+    }
+
+    public ProductResponseDTO increaseStock(Integer id, int quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+        product.setStock(product.getStock() + quantity);
+        Product updated = productRepository.save(product);
+        return productMapper.toDTO(updated);
+    }
+
 }
 

@@ -3,8 +3,10 @@ package com.inventario.Inventario.entities;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+
 public enum PaymentMethod {
-    CASH, CARD, MIXED, CREDIT;
+    CASH, CARD, TRANSFER, MIXED;
 
     /**
      * ¿Qué hace esto?
@@ -16,12 +18,10 @@ public enum PaymentMethod {
      */
     @JsonCreator
     public static PaymentMethod fromString(String value) {
-        for (PaymentMethod method : PaymentMethod.values()) {
-            if (method.name().equalsIgnoreCase(value)) {
-                return method;
-            }
-        }
-        throw new IllegalArgumentException("Método de pago inválido: " + value);
+        return Arrays.stream(PaymentMethod.values())
+                .filter(method -> method.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Método de pago inválido: " + value));
     }
 
     @JsonValue

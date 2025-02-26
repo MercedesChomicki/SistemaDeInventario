@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class SaleDetailRequestDTO {
+public class DebtDetailRequestDTO {
     @NotBlank
     private Integer productId;
     @NotBlank

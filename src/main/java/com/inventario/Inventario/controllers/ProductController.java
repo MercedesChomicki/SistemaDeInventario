@@ -1,6 +1,7 @@
 package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.ProductRequestDTO;
+import com.inventario.Inventario.dtos.ProductResponseDTO;
 import com.inventario.Inventario.entities.Product;
 import com.inventario.Inventario.services.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ProductController {
      * Obtener todos los productos con opción de ordenación
      **/
     @GetMapping()
-    public List<Product> getAllProducts(
+    public List<ProductResponseDTO> getAllProducts(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
@@ -49,6 +50,14 @@ public class ProductController {
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
+    }
+
+    @PatchMapping("/{id}/quantity/{quantity}")
+    public ResponseEntity<ProductResponseDTO> increaseStock(
+            @PathVariable Integer id,
+            @PathVariable Integer quantity) {
+        ProductResponseDTO updated = productService.increaseStock(id, quantity);
+        return ResponseEntity.ok(updated);
     }
 
 }

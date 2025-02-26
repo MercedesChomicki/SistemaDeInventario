@@ -10,16 +10,16 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-@Table(name = "sale_details")
-public class SaleDetail {
+@Table(name = "debt_details")
+public class DebtDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "sale_id", nullable = false)
-    private Sale sale;
+    @JoinColumn(name = "debt_id", nullable = false)
+    private Debt debt;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -34,11 +34,17 @@ public class SaleDetail {
     @Column(nullable = false)
     private BigDecimal subtotal;
 
-    public SaleDetail(Sale sale, Product product, Integer quantity, BigDecimal unitPrice, BigDecimal subtotal) {
-        this.sale = sale;
+    public DebtDetail(Debt debt, Product product, Integer quantity) {
+        this.debt = debt;
         this.product = product;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.subtotal = subtotal;
+        this.unitPrice = product.getCashPrice();
+        this.subtotal = this.unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
+
+    public void updateDetailValues(Integer quantity){
+        this.unitPrice = this.product.getCashPrice();
+        this.quantity += quantity;
+        this.subtotal = this.subtotal.add(unitPrice.multiply(BigDecimal.valueOf(quantity)));
     }
 }
