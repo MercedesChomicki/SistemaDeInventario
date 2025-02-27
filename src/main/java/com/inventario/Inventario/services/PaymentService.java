@@ -30,14 +30,17 @@ public class PaymentService {
         }
 
         // Si el pago es con transferencia, volver al importe base
-        BigDecimal baseAmount = !incash ? calculateBaseAmount(amount) : amount;
+        BigDecimal baseAmount = amount, surcharge = BigDecimal.ZERO;
+        if(!incash) {
+            baseAmount = calculateBaseAmount(amount);
+            surcharge = calculateSurcharge(baseAmount);
+        }
 
         if (baseAmount.compareTo(debt.getAmountDue()) > 0) {
             throw new IllegalArgumentException("El monto a pagar no puede ser mayor a la deuda pendiente.");
         }
 
         // Si el pago es por transferencia, calcular recargo
-        BigDecimal surcharge = calculateSurcharge(baseAmount);
         debt.setAmountTotal(debt.getAmountTotal().add(surcharge));
         debt.setAmountPaid(debt.getAmountPaid().add(amount));
         debt.setAmountDue(debt.getAmountTotal().subtract(debt.getAmountPaid()));

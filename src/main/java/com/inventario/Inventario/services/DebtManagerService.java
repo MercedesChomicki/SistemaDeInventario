@@ -67,8 +67,6 @@ public class DebtManagerService {
     @Transactional
     public DebtResponseDTO updateAndSaveDebt(Debt debt, List<DebtDetail> details, BigDecimal payInCash, BigDecimal payWithTransfer) {
         BigDecimal total = calculateTotal(details, payWithTransfer);
-        System.out.println("TOTAL: "+total);
-
         BigDecimal totalPayment = payInCash.add(payWithTransfer);
 
         if (totalPayment.compareTo(total) > 0)

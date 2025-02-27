@@ -76,16 +76,4 @@ public class Debt {
         this.status = amountPaid.compareTo(BigDecimal.ZERO) > 0 ? DebtStatus.PARTIALLY_PAID : DebtStatus.PENDING;
         this.updatedAt = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
     }
-
-
-    // Método para aplicar recargo si no se paga en efectivo
-    /*public void applySurchargeIfNeeded(boolean incash) {
-        if (!incash) {
-            BigDecimal surcharge = this.getAmountDue()
-                    .multiply(SURCHARGE_PERCENTAGE)
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            this.amountDue = this.amountDue.add(surcharge);
-            this.amountTotal = this.amountTotal.add(surcharge);
-        }
-    }*/
 }

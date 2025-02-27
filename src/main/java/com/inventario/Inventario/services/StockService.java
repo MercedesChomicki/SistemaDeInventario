@@ -43,7 +43,7 @@ public class StockService {
 
             Product product = productsMap.get(productId);
             if (product.getStock() < quantity) {
-                throw new IllegalArgumentException("Stock insuficiente para " + product.getName());
+                throw new IllegalArgumentException("Stock insuficiente para " + product.getName()+", ID: "+productId);
             }
 
             // Descontar stock en memoria (Hibernate se encargará de actualizarlo en la BD)
