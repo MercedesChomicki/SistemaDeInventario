@@ -20,7 +20,7 @@ public class DebtRequestDTO {
     private Integer customerId;
     @NotEmpty
     private List<DebtDetailRequestDTO> details;
-    private BigDecimal payInCash;
-    private BigDecimal payWithTransfer;
+    private BigDecimal amount = BigDecimal.ZERO;
+    private boolean incash = true;
     private LocalDateTime date;
 }

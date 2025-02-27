@@ -14,14 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.inventario.Inventario.constants.Constant.SURCHARGE_PERCENTAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +28,25 @@ public class DebtManagerService {
     private final DebtDetailRepository debtDetailRepository;
     private final CustomerRepository customerRepository;
     private final DebtMapper debtMapper;
+    private final PaymentService paymentService;
 
     public Debt getDebtById(Integer id) {
         return debtRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("La deuda", id));
+    }
+
+    public Debt getOrCreateDebt(Integer customerId, LocalDateTime date) {
+        Customer customer = getCustomer(customerId);
+        // Buscar deudas existentes que no estén pagadas completamente
+        Debt unpaidDebt = debtRepository.findByCustomerAndStatusIn(
+                customer, List.of(DebtStatus.PENDING, DebtStatus.PARTIALLY_PAID));
+
+        return unpaidDebt != null ? unpaidDebt : debtRepository.save(new Debt(customer, date));
+    }
+
+    private Customer getCustomer(Integer customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
     }
 
     // Procesa los detalles de la deuda
@@ -65,46 +77,53 @@ public class DebtManagerService {
     }
 
     @Transactional
-    public DebtResponseDTO updateAndSaveDebt(Debt debt, List<DebtDetail> details, BigDecimal payInCash, BigDecimal payWithTransfer) {
-        BigDecimal total = calculateTotal(details, payWithTransfer);
-        BigDecimal totalPayment = payInCash.add(payWithTransfer);
+    public DebtResponseDTO updateAndSaveDebt(Debt debt, List<DebtDetail> details, BigDecimal amount, boolean isInCash) {
+        BigDecimal total = paymentService.calculateTotal(details);
+        BigDecimal surcharge = BigDecimal.ZERO;
+        if(!isInCash){
+            surcharge = paymentService.calculateSurcharge(amount);
+        }
 
-        if (totalPayment.compareTo(total) > 0)
+        if (amount.compareTo(total) >= 0)
             throw new IllegalArgumentException("No se puede crear una deuda si está pagando el total");
 
-        debt.updateDebtValues(total, totalPayment);
+        System.out.println("Recalculating surcharge: " + surcharge);
+        debt.recalculateDebt(total, amount, surcharge);
+        System.out.println("Updated surcharge in Debt: " + debt.getSurcharge());
         debtRepository.save(debt);
         return debtMapper.toDTO(debt);
     }
 
-    public Debt getOrCreateDebt(Integer customerId, LocalDateTime date) {
-        Customer customer = getCustomer(customerId);
-        // Buscar deudas existentes que no estén pagadas completaamente
-        Debt unpaidDebt = debtRepository.findByCustomerAndStatusIn(
-                customer, List.of(DebtStatus.PENDING, DebtStatus.PARTIALLY_PAID));
+    public Debt updateDebtDetails(Integer debtId) {
+        Debt debt = getDebtById(debtId);
+        BigDecimal total = debt.getDetails().stream()
+                .peek(detail -> {
+                    Product product = detail.getProduct();
+                    BigDecimal actualPrice = product.getCashPrice();
+                    detail.setUnitPrice(actualPrice);
+                    detail.setSubtotal(actualPrice.multiply(BigDecimal.valueOf(detail.getQuantity())));
+                })
+                .map(DebtDetail::getSubtotal) // Obtiene todos los subtotales
+                .reduce(BigDecimal.ZERO, BigDecimal::add); // Suma los subtotales en una sola operación
 
-        return unpaidDebt != null ? unpaidDebt : debtRepository.save(new Debt(customer, date));
+        debt.setAmountTotal(total);
+        debt.setAmountDue(total.subtract(debt.getAmountPaid()));
+
+        return debt;
     }
 
-    private Customer getCustomer(Integer customerId) {
-        return customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", customerId));
+    public void validateDebtCreation(DebtRequestDTO dto) {
+        if (dto.getDetails() == null || dto.getDetails().isEmpty()) {
+            throw new IllegalArgumentException("No se puede crear una deuda sin productos.");
+        }
+        if (!customerRepository.existsById(dto.getCustomerId())) {
+            throw new ResourceNotFoundException("Cliente", dto.getCustomerId());
+        }
     }
 
-    private BigDecimal calculateTotal(List<DebtDetail> details, BigDecimal payWithTransfer){
-        BigDecimal total = details.stream()
-                .map(DebtDetail::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return payWithTransfer.compareTo(BigDecimal.ZERO) > 0
-                ? total.add(calculateSurcharge(payWithTransfer))
-                : total;
-    }
-
-    // Método para calcular el recargo por transferencia
-    public BigDecimal calculateSurcharge(BigDecimal total) {
-        return total.multiply(SURCHARGE_PERCENTAGE)
-                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+    public DebtResponseDTO finalizeDebtPayment(Debt debt) {
+        debtRepository.save(debt);
+        return debt.getStatus() == DebtStatus.PAID ? null : debtMapper.toDTO(debt);
     }
 
 }

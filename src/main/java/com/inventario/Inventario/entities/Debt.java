@@ -28,16 +28,19 @@ public class Debt {
     private Customer customer;
 
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DebtDetail> details;
+    private List<DebtDetail> details = new ArrayList<>();
 
     @Column(name = "amount_total", nullable = false)
-    private BigDecimal amountTotal;
+    private BigDecimal amountTotal = BigDecimal.ZERO;
 
     @Column(name = "amount_due", nullable = false)
-    private BigDecimal amountDue;
+    private BigDecimal amountDue = BigDecimal.ZERO;
 
     @Column(name = "amount_paid", nullable = false)
-    private BigDecimal amountPaid;
+    private BigDecimal amountPaid = BigDecimal.ZERO;
+
+    @Column(name = "surcharge", nullable = false)
+    private BigDecimal surcharge = BigDecimal.ZERO;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -47,16 +50,11 @@ public class Debt {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DebtStatus status;
+    private DebtStatus status = DebtStatus.PENDING;
 
     public Debt(Customer customer, LocalDateTime createdAt) {
         this.customer = customer;
         this.createdAt = createdAt;
-        this.amountTotal = BigDecimal.ZERO;
-        this.amountDue = BigDecimal.ZERO;
-        this.amountPaid = BigDecimal.ZERO;
-        this.status = DebtStatus.PENDING;
-        this.details = new ArrayList<>();
     }
 
     @PrePersist
@@ -69,11 +67,14 @@ public class Debt {
         this.updatedAt = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
     }
 
-    public void updateDebtValues(BigDecimal total, BigDecimal amountPaid) {
-        this.amountTotal = total;
-        this.amountPaid = this.amountPaid.add(amountPaid);
+    public void recalculateDebt(BigDecimal total, BigDecimal amount, BigDecimal surcharge) {
+        this.surcharge = this.surcharge.add(surcharge);
+        this.amountTotal = total != null ? total.add(this.surcharge) : amountTotal.add(surcharge);
+        this.amountPaid = this.amountPaid.add(amount);
         this.amountDue = amountTotal.subtract(this.amountPaid);
-        this.status = amountPaid.compareTo(BigDecimal.ZERO) > 0 ? DebtStatus.PARTIALLY_PAID : DebtStatus.PENDING;
+        this.status = (this.amountDue.compareTo(BigDecimal.ZERO) == 0) ? DebtStatus.PAID
+                    : (this.amountDue.compareTo(amountTotal) == 0) ? DebtStatus.PENDING
+                    : DebtStatus.PARTIALLY_PAID;
         this.updatedAt = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
     }
 }

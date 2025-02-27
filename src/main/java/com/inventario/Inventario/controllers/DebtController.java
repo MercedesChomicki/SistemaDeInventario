@@ -2,13 +2,13 @@ package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.DebtRequestDTO;
 import com.inventario.Inventario.dtos.DebtResponseDTO;
+import com.inventario.Inventario.dtos.PaymentRequestDTO;
 import com.inventario.Inventario.services.DebtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,19 +38,17 @@ public class DebtController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newDebt);
     }
 
-    @PatchMapping("/update-debt-values/debt/{id}")
+    /*@PatchMapping("/update-debt-values/debt/{id}")
     public ResponseEntity<DebtResponseDTO> updateDebtValues(@PathVariable Integer id) {
         DebtResponseDTO updated = debtService.updateDebtValues(id);
         return ResponseEntity.ok(updated);
-    }
+    }*/
 
-    @PatchMapping("/paydebt/{id}/incash/{incash}/amount/{amount}")
-    public ResponseEntity<?> payDebt(
+    @PatchMapping("/{id}/pay")
+    public ResponseEntity<?> processDebtPayment(
             @PathVariable  Integer id,
-            @PathVariable boolean incash,
-            @PathVariable BigDecimal amount){
-        DebtResponseDTO updated = debtService.payDebt(id, incash, amount);
-
+            @RequestBody PaymentRequestDTO paymentRequest){
+        DebtResponseDTO updated = debtService.processDebtPayment(id, paymentRequest.getAmount(), paymentRequest.isInCash());
         return ResponseEntity.ok(Objects.requireNonNullElse(updated,
                 "La deuda ha sido completamente saldada."));
     }

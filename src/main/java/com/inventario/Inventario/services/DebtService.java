@@ -9,7 +9,6 @@ import com.inventario.Inventario.repositories.DebtRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -42,49 +41,26 @@ public class DebtService {
 
     @Transactional
     public DebtResponseDTO createDebt(DebtRequestDTO dto) {
-        // Validar y actualizar el stock
+        debtManagerService.validateDebtCreation(dto);
         Map<Integer, Product> productsMap = stockService.validateAndUpdateStock(dto.getDetails());
         Debt debt = debtManagerService.getOrCreateDebt(dto.getCustomerId(), dto.getDate());
         List<DebtDetail> details = debtManagerService.processAndSaveDebtDetails(dto, debt, productsMap);
-        return debtManagerService.updateAndSaveDebt(debt, details, dto.getPayInCash(), dto.getPayWithTransfer());
+        return debtManagerService.updateAndSaveDebt(debt, details, dto.getAmount(), dto.isIncash());
     }
 
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public DebtResponseDTO payDebt(Integer id, boolean incash, BigDecimal amount) {
+    @Transactional
+    public DebtResponseDTO processDebtPayment(Integer id, BigDecimal amount, boolean isInCash) {
         Debt debt = debtManagerService.getDebtById(id);
-        paymentService.processPayment(debt, amount, incash);
-        debt = debtRepository.save(debt);
-        return debt.getStatus() == DebtStatus.PAID ? null : debtMapper.toDTO(debt);
-        // TODO Agregar el monto pagado (baseAmount) al atributo debtsPaid de la tabla reportes cuando esté
+        paymentService.processPayment(debt, amount, isInCash);
+        return debtManagerService.finalizeDebtPayment(debt);
     }
 
-    /**
-     * TODO este método va en reportes
-        public BigDecimal paidToday(BigDecimal baseAmount){
-            paidToday = getPaidToday().add(baseAmount);
-        }
-     */
-
+    /*@Transactional
     public DebtResponseDTO updateDebtValues(Integer debtId){
-        Debt debt = debtManagerService.getDebtById(debtId);
-
-        BigDecimal total = debt.getDetails().stream()
-                .peek(detail -> {
-                    Product p = detail.getProduct();
-                    BigDecimal actualPrice = p.getCashPrice();
-                    detail.setUnitPrice(actualPrice);
-                    detail.setSubtotal(actualPrice.multiply(BigDecimal.valueOf(detail.getQuantity())));
-                })
-                .map(DebtDetail::getSubtotal) // Obtiene todos los subtotales
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // Suma los subtotales en una sola operación
-
-        debt.setAmountTotal(total);
-        debt.setAmountDue(total.subtract(debt.getAmountPaid()));
-
+        Debt debt = debtManagerService.updateDebtDetails(debtId);
         debtRepository.save(debt);
         return debtMapper.toDTO(debt);
-    }
+    }*/
 
     // TODO al pagarse completamente una deuda, cambia su estado a PAID pero no se elimina
     public void deleteDebt(Integer id) {

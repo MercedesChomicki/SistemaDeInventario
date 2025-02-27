@@ -17,6 +17,7 @@ public class DebtResponseDTO {
     private BigDecimal amountTotal;
     private BigDecimal amountDue;
     private BigDecimal amountPaid;
+    private BigDecimal surcharge;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private DebtStatus status;

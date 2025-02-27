@@ -18,38 +18,30 @@ public class StockService {
     private final ProductRepository productRepository;
 
     public Map<Integer, Product> validateAndUpdateStock(List<DebtDetailRequestDTO> details) {
-        if (details == null || details.isEmpty()) {
-            throw new IllegalArgumentException("No se puede crear una deuda sin productos");
-        }
-
-        // Obtener todos los IDs de productos en una sola consulta
+        // Obtener todos los productId del detalle en una sola consulta
         Set<Integer> productIds = details.stream()
                 .map(DebtDetailRequestDTO::getProductId)
                 .collect(Collectors.toSet());
 
         // Traer todos los productos en una sola consulta
         List<Product> products = productRepository.findAllById(productIds);
+        // Mapear cada producto con su respectivo id
         Map<Integer, Product> productsMap = products.stream()
                 .collect(Collectors.toMap(Product::getId, p -> p));
 
-        // Validar que todos los productos existan
-        if (products.size() != productIds.size()) {
-            throw new IllegalArgumentException("Algunos productos no se encuentran en el sistema.");
-        }
-
         for (DebtDetailRequestDTO detailDTO : details) {
-            Integer productId = detailDTO.getProductId();
-            Integer quantity = detailDTO.getQuantity();
-
-            Product product = productsMap.get(productId);
-            if (product.getStock() < quantity) {
-                throw new IllegalArgumentException("Stock insuficiente para " + product.getName()+", ID: "+productId);
+            Product product = productsMap.get(detailDTO.getProductId());
+            if(product == null) {
+                throw new IllegalArgumentException(
+                        String.format("El producto con id %d no se encuentra en el sistema.", detailDTO.getProductId()));
             }
-
-            // Descontar stock en memoria (Hibernate se encargará de actualizarlo en la BD)
-            product.setStock(product.getStock() - quantity);
+            if (product.getStock() < detailDTO.getQuantity()) {
+                throw new IllegalArgumentException(
+                        String.format("Stock insuficiente para %s (ID: %d). Disponible: %d",
+                                product.getName(), product.getId(), product.getStock()));
+            }
+            product.setStock(product.getStock() - detailDTO.getQuantity());
         }
-
         return productsMap;
     }
 }
