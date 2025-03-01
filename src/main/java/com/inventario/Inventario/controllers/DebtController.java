@@ -22,8 +22,7 @@ public class DebtController {
     @GetMapping()
     public List<DebtResponseDTO> getAllDebts(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String direction
-    ) {
+            @RequestParam(required = false, defaultValue = "asc") String direction) {
         return debtService.getAllDebtsSorted(sortBy, direction);
     }
 
@@ -38,12 +37,6 @@ public class DebtController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newDebt);
     }
 
-    /*@PatchMapping("/update-debt-values/debt/{id}")
-    public ResponseEntity<DebtResponseDTO> updateDebtValues(@PathVariable Integer id) {
-        DebtResponseDTO updated = debtService.updateDebtValues(id);
-        return ResponseEntity.ok(updated);
-    }*/
-
     @PatchMapping("/{id}/pay")
     public ResponseEntity<?> processDebtPayment(
             @PathVariable  Integer id,
@@ -53,9 +46,16 @@ public class DebtController {
                 "La deuda ha sido completamente saldada."));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDebt(@PathVariable Integer id) {
-        debtService.deleteDebt(id);
-        return ResponseEntity.ok("Se ha eliminado exitosamente.");
+    @GetMapping("/unpaid")
+    public List<DebtResponseDTO> getAllUnpaidDebts(
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String direction) {
+        return debtService.getAllUnpaidDebts(sortBy, direction);
     }
+
+    /*@PatchMapping("/update-debt-values/debt/{id}")
+    public ResponseEntity<DebtResponseDTO> updateDebtValues(@PathVariable Integer id) {
+        DebtResponseDTO updated = debtService.updateDebtValues(id);
+        return ResponseEntity.ok(updated);
+    }*/
 }

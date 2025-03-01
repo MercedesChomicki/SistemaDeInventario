@@ -3,7 +3,6 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.dtos.*;
 import com.inventario.Inventario.entities.*;
 
-import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.DebtMapper;
 import com.inventario.Inventario.repositories.DebtRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,18 +54,19 @@ public class DebtService {
         return debtManagerService.finalizeDebtPayment(debt);
     }
 
+    public List<DebtResponseDTO> getAllUnpaidDebts(String sortBy, String direction) {
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Sort sort = Sort.by(sortDirection, sortBy);
+        return debtRepository.findByStatusNot(DebtStatus.PAID, sort)
+                .stream()
+                .map(debtMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     /*@Transactional
     public DebtResponseDTO updateDebtValues(Integer debtId){
         Debt debt = debtManagerService.updateDebtDetails(debtId);
         debtRepository.save(debt);
         return debtMapper.toDTO(debt);
     }*/
-
-    // TODO al pagarse completamente una deuda, cambia su estado a PAID pero no se elimina
-    public void deleteDebt(Integer id) {
-        if (!debtRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Deuda", id);
-        }
-        debtRepository.deleteById(id);
-    }
 }
