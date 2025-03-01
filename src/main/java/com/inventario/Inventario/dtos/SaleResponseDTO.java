@@ -12,7 +12,7 @@ import java.util.List;
 public class SaleResponseDTO {
     private Long id;
     private BigDecimal total;
-    private LocalDateTime date;
     private List<SaleDetailResponseDTO> details;
     private List<SalePaymentResponseDTO> payments;
+    private LocalDateTime date;
 }

@@ -1,22 +1,20 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "sale_payments")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "sale_payments")
 public class SalePayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -29,4 +27,10 @@ public class SalePayment {
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
+
+    public SalePayment(PaymentMethod paymentMethod, BigDecimal amount, Sale sale) {
+        this.paymentMethod = paymentMethod;
+        this.amount = amount;
+        this.sale = sale;
+    }
 }

@@ -1,6 +1,6 @@
 package com.inventario.Inventario.services;
 
-import com.inventario.Inventario.dtos.DebtDetailRequestDTO;
+import com.inventario.Inventario.dtos.DetailRequestDTO;
 import com.inventario.Inventario.dtos.DebtRequestDTO;
 import com.inventario.Inventario.dtos.DebtResponseDTO;
 import com.inventario.Inventario.entities.*;
@@ -28,7 +28,7 @@ public class DebtManagerService {
     private final DebtDetailRepository debtDetailRepository;
     private final CustomerRepository customerRepository;
     private final DebtMapper debtMapper;
-    private final PaymentService paymentService;
+    private final DebtPaymentService debtPaymentService;
 
     public Debt getDebtById(Integer id) {
         return debtRepository.findById(id)
@@ -57,7 +57,7 @@ public class DebtManagerService {
 
         List<DebtDetail> newDetails = new ArrayList<>();
 
-        for (DebtDetailRequestDTO detailDTO : dto.getDetails()) {
+        for (DetailRequestDTO detailDTO : dto.getDetails()) {
             Integer productId = detailDTO.getProductId();
             Integer quantity = detailDTO.getQuantity();
             Product product = productsMap.get(productId);
@@ -77,19 +77,17 @@ public class DebtManagerService {
     }
 
     @Transactional
-    public DebtResponseDTO updateAndSaveDebt(Debt debt, List<DebtDetail> details, BigDecimal amount, boolean isInCash) {
-        BigDecimal total = paymentService.calculateTotal(details);
+    public DebtResponseDTO saveDebt(Debt debt, List<? extends TransactionDetail> details, BigDecimal amount, PaymentMethod paymentMethod) {
+        BigDecimal total = debtPaymentService.calculateTotalWithoutSurcharge(details);
         BigDecimal surcharge = BigDecimal.ZERO;
-        if(!isInCash){
-            surcharge = paymentService.calculateSurcharge(amount);
+        if(paymentMethod == PaymentMethod.CARD || paymentMethod == PaymentMethod.TRANSFER){
+            surcharge = debtPaymentService.calculateSurcharge(amount);
         }
 
         if (amount.compareTo(total) >= 0)
             throw new IllegalArgumentException("No se puede crear una deuda si está pagando el total");
 
-        System.out.println("Recalculating surcharge: " + surcharge);
         debt.recalculateDebt(total, amount, surcharge);
-        System.out.println("Updated surcharge in Debt: " + debt.getSurcharge());
         debtRepository.save(debt);
         return debtMapper.toDTO(debt);
     }
@@ -103,7 +101,7 @@ public class DebtManagerService {
                     detail.setUnitPrice(actualPrice);
                     detail.setSubtotal(actualPrice.multiply(BigDecimal.valueOf(detail.getQuantity())));
                 })
-                .map(DebtDetail::getSubtotal) // Obtiene todos los subtotales
+                .map(TransactionDetail::getSubtotal) // Obtiene todos los subtotales
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Suma los subtotales en una sola operación
 
         debt.setAmountTotal(total);

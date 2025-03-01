@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 public class SaleRequestDTO {
     @NotEmpty
-    private List<SaleDetailRequestDTO> details;
+    private List<DetailRequestDTO> details;
     @NotEmpty
-    private List<SalePaymentRequestDTO> payments;
+    private List<PaymentRequestDTO> payments;
 }

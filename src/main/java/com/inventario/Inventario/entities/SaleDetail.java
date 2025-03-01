@@ -1,44 +1,26 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor  // Crea un constructor vacío
-@AllArgsConstructor // Crea un constructor con todos los atributos
 @Getter
 @Setter
 @Entity
 @Table(name = "sale_details")
-public class SaleDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private Long id;
-
+public class SaleDetail extends TransactionDetail {
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    public SaleDetail() {
+        super();
+    }
 
-    @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private BigDecimal unitPrice;
-
-    @Column(nullable = false)
-    private BigDecimal subtotal;
-
-    public SaleDetail(Sale sale, Product product, Integer quantity, BigDecimal unitPrice, BigDecimal subtotal) {
+    public SaleDetail(Sale sale, Product product, Integer quantity) {
+        super(product, quantity, product.getCashPrice(), product.getCashPrice().multiply(BigDecimal.valueOf(quantity)));
         this.sale = sale;
-        this.product = product;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.subtotal = subtotal;
     }
 }

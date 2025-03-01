@@ -1,8 +1,8 @@
 package com.inventario.Inventario.controllers;
 
+import com.inventario.Inventario.dtos.SaleDetailResponseDTO;
 import com.inventario.Inventario.dtos.SaleRequestDTO;
 import com.inventario.Inventario.dtos.SaleResponseDTO;
-import com.inventario.Inventario.entities.Sale;
 import com.inventario.Inventario.services.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class SaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Sale> getSaleById(@PathVariable Long id) {
+    public ResponseEntity<SaleResponseDTO> getSaleById(@PathVariable Long id) {
         return ResponseEntity.ok(saleService.getSaleById(id));
     }
 
@@ -35,6 +35,18 @@ public class SaleController {
     public ResponseEntity<SaleResponseDTO> createSale(@RequestBody SaleRequestDTO dto) {
         SaleResponseDTO newSale = saleService.createSale(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newSale);
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<List<SaleDetailResponseDTO>> getSaleDetails(@PathVariable Long id) {
+        SaleResponseDTO dto = saleService.getSaleById(id);
+        return ResponseEntity.ok(dto.getDetails());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteSale(@PathVariable Long id) {
+        saleService.deleteSale(id);
+        return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
 
     /*@GetMapping("/{saleId}/products")

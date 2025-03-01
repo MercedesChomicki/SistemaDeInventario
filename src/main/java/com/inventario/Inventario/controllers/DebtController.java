@@ -48,7 +48,7 @@ public class DebtController {
     public ResponseEntity<?> processDebtPayment(
             @PathVariable  Integer id,
             @RequestBody PaymentRequestDTO paymentRequest){
-        DebtResponseDTO updated = debtService.processDebtPayment(id, paymentRequest.getAmount(), paymentRequest.isInCash());
+        DebtResponseDTO updated = debtService.processDebtPayment(id, paymentRequest.getAmount(), paymentRequest.getPaymentMethod());
         return ResponseEntity.ok(Objects.requireNonNullElse(updated,
                 "La deuda ha sido completamente saldada."));
     }

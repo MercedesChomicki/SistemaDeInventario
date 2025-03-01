@@ -23,7 +23,7 @@ public class DebtService {
     private final DebtMapper debtMapper;
     private final DebtManagerService debtManagerService;
     private final StockService stockService;
-    private final PaymentService paymentService;
+    private final DebtPaymentService debtPaymentService;
 
     public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
@@ -45,13 +45,13 @@ public class DebtService {
         Map<Integer, Product> productsMap = stockService.validateAndUpdateStock(dto.getDetails());
         Debt debt = debtManagerService.getOrCreateDebt(dto.getCustomerId(), dto.getDate());
         List<DebtDetail> details = debtManagerService.processAndSaveDebtDetails(dto, debt, productsMap);
-        return debtManagerService.updateAndSaveDebt(debt, details, dto.getAmount(), dto.isIncash());
+        return debtManagerService.saveDebt(debt, details, dto.getPayment().getAmount(), dto.getPayment().getPaymentMethod());
     }
 
     @Transactional
-    public DebtResponseDTO processDebtPayment(Integer id, BigDecimal amount, boolean isInCash) {
+    public DebtResponseDTO processDebtPayment(Integer id, BigDecimal amount, PaymentMethod paymentMethod) {
         Debt debt = debtManagerService.getDebtById(id);
-        paymentService.processPayment(debt, amount, isInCash);
+        debtPaymentService.processPayment(debt, amount, paymentMethod);
         return debtManagerService.finalizeDebtPayment(debt);
     }
 

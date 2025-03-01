@@ -1,7 +1,7 @@
 package com.inventario.Inventario.repositories;
 
-import com.inventario.Inventario.entities.CartProduct;
-import com.inventario.Inventario.entities.SaleDetail;
+import com.inventario.Inventario.dtos.SalesReportDTO;
+import com.inventario.Inventario.entities.TransactionDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,19 +11,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface SaleDetailRepository extends JpaRepository<SaleDetail, Long> {
-
-    List<SaleDetail> findBySaleId(Long saleId);
+public interface SaleDetailRepository extends JpaRepository<TransactionDetail, Long> {
 
     /** Como usuario quiero poder generar un reporte en cualquier momento
      para saber qué productos y qué cantidad de cada uno se va vendiendo en el día,
      con la posibilidad de ordenarlos de menor a mayor o de mayor a menor */
-    @Query("SELECT p.name, SUM(cp.quantity), c.creationDate " +
-            "FROM CartProduct cp " +
-            "JOIN cp.product p " +
-            "JOIN cp.cart c " +
-            "WHERE c.creationDate BETWEEN :startDate AND :endDate " +
-            "GROUP BY p.name ")
-    List<Object[]> getSalesReportByDate(@Param("startDate") LocalDateTime startDate,
-                                        @Param("endDate") LocalDateTime endDate);
+    @Query("""
+    SELECT sd.product.name, SUM(sd.quantity), s.date
+    FROM SaleDetail sd JOIN sd.sale s
+    WHERE s.date BETWEEN :startDate AND :endDate
+    GROUP BY sd.product.name, s.date
+   """)
+    List<SalesReportDTO> getSalesReportByDate(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
 }

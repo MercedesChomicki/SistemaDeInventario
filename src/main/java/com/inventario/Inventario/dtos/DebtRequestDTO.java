@@ -7,20 +7,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor  // Crea un constructor vacío
-@AllArgsConstructor // Crea un constructor con todos los atributos
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class DebtRequestDTO {
     @Schema(example = "1")
     @NotNull
     private Integer customerId;
     @NotEmpty
-    private List<DebtDetailRequestDTO> details;
-    private BigDecimal amount = BigDecimal.ZERO;
-    private boolean incash = true;
+    private List<DetailRequestDTO> details;
+    private PaymentRequestDTO payment;
     private LocalDateTime date;
 }

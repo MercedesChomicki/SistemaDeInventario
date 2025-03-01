@@ -1,15 +1,16 @@
 package com.inventario.Inventario.dtos;
 
+import com.inventario.Inventario.entities.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor  // Crea un constructor vacío
-@AllArgsConstructor // Crea un constructor con todos los atributos
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class PaymentRequestDTO {
-    private boolean isInCash;
+    private PaymentMethod paymentMethod;
     private BigDecimal amount = BigDecimal.ZERO;
 }

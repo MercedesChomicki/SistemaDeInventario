@@ -69,7 +69,7 @@ public class Debt {
 
     public void recalculateDebt(BigDecimal total, BigDecimal amount, BigDecimal surcharge) {
         this.surcharge = this.surcharge.add(surcharge);
-        this.amountTotal = total != null ? total.add(this.surcharge) : amountTotal.add(surcharge);
+        this.amountTotal = total != null ? total.add(surcharge) : amountTotal.add(surcharge);
         this.amountPaid = this.amountPaid.add(amount);
         this.amountDue = amountTotal.subtract(this.amountPaid);
         this.status = (this.amountDue.compareTo(BigDecimal.ZERO) == 0) ? DebtStatus.PAID
