@@ -51,7 +51,7 @@ public class DebtService {
     @Transactional
     public DebtResponseDTO processDebtPayment(Integer id, BigDecimal amount, PaymentMethod paymentMethod) {
         Debt debt = debtManagerService.getDebtById(id);
-        debtPaymentService.processPayment(debt, amount, paymentMethod);
+        debtPaymentService.processDebtPayment(debt, amount, paymentMethod);
         return debtManagerService.finalizeDebtPayment(debt);
     }
 

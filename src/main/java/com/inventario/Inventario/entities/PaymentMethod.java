@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 
 public enum PaymentMethod {
-    CASH, CARD, TRANSFER, MIXED;
+    CASH, CARD, TRANSFER;
 
     /**
      * ¿Qué hace esto?

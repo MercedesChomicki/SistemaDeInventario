@@ -2,7 +2,6 @@ package com.inventario.Inventario.services;
 
 import com.inventario.Inventario.dtos.*;
 import com.inventario.Inventario.entities.*;
-import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.SaleMapper;
 import com.inventario.Inventario.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -54,12 +53,5 @@ public class SaleService {
         BigDecimal total = paymentService.calculateTotal(details, dto.getPayments());
         List<SalePayment> payments = paymentService.processSalePayments(sale, dto.getPayments(), total);
         return saleManagerService.saveSaleAndConvertToDTO(sale, total, payments, details);
-    }
-
-    public void deleteSale(Long id) {
-        if (!saleRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Deuda", id);
-        }
-        saleRepository.deleteById(id);
     }
 }

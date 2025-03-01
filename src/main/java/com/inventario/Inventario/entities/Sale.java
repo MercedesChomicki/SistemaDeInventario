@@ -23,7 +23,7 @@ public class Sale {
     private Long id;
 
     @Column(nullable = false)
-    private BigDecimal total  = BigDecimal.ONE;
+    private BigDecimal total  = BigDecimal.ZERO;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime date;

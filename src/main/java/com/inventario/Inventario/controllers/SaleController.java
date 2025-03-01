@@ -42,23 +42,4 @@ public class SaleController {
         SaleResponseDTO dto = saleService.getSaleById(id);
         return ResponseEntity.ok(dto.getDetails());
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSale(@PathVariable Long id) {
-        saleService.deleteSale(id);
-        return ResponseEntity.ok("Se ha eliminado exitosamente.");
-    }
-
-    /*@GetMapping("/{saleId}/products")
-    public List<SaleProductResponseDTO> getSaleProducts(@PathVariable Integer saleId) {
-        return saleService.getSaleProducts(saleId);
-    }
-
-    @PostMapping("/{saleId}/checkout")
-    public ResponseEntity<BigDecimal> checkout(@PathVariable Integer saleId, @RequestParam boolean isCardPayment) {
-        // Obtener el carrito y sus productos
-        List<SaleProductResponseDTO> saleProducts = saleService.getSaleProducts(saleId);
-        BigDecimal totalPrice = saleService.calculateTotalPrice(saleProducts, isCardPayment);
-        return ResponseEntity.ok(totalPrice);
-    }*/
 }

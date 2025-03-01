@@ -33,7 +33,7 @@ public class StockService {
             Product product = productsMap.get(detailDTO.getProductId());
             if(product == null) {
                 throw new IllegalArgumentException(
-                        String.format("El producto con id %d no se encuentra en el sistema.", detailDTO.getProductId()));
+                        String.format("El producto con id %d no se encuentra en el sistema", detailDTO.getProductId()));
             }
             if (product.getStock() < detailDTO.getQuantity()) {
                 throw new IllegalArgumentException(

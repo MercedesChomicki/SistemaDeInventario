@@ -26,7 +26,7 @@ public class SaleManagerService {
 
     public Sale getSaleById(Long id) {
         return saleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrito", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Venta", id));
     }
 
     public Sale createAndSaveSale(){
@@ -37,8 +37,10 @@ public class SaleManagerService {
 
     public void validateSaleCreation(SaleRequestDTO dto) {
         if (dto.getDetails() == null || dto.getDetails().isEmpty()) {
-            throw new IllegalArgumentException("No se puede crear una venta sin productos");
+            throw new IllegalArgumentException("Debe haber al menos un producto registrado");
         }
+        if (dto.getPayments() == null || dto.getPayments().isEmpty())
+            throw new IllegalArgumentException("Debe haber al menos un pago registrado");
     }
 
     public List<SaleDetail> processAndSaveSaleDetails(SaleRequestDTO dto, Sale sale, Map<Integer, Product> productsMap) {
