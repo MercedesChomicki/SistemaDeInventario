@@ -1,6 +1,6 @@
 package com.inventario.Inventario.mappers;
 
-import com.inventario.Inventario.dtos.SaleDetailResponseDTO;
+import com.inventario.Inventario.dtos.DetailResponseDTO;
 import com.inventario.Inventario.dtos.SaleResponseDTO;
 import com.inventario.Inventario.entities.Sale;
 import com.inventario.Inventario.entities.SaleDetail;
@@ -14,5 +14,5 @@ public interface SaleMapper {
     SaleResponseDTO toDTO(Sale sale);
 
     @Mapping(source = "product.id", target = "productId")
-    SaleDetailResponseDTO toDetailDTO(SaleDetail saleDetail);
+    DetailResponseDTO toDetailDTO(SaleDetail saleDetail);
 }

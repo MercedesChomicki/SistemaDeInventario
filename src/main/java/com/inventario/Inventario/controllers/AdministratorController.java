@@ -1,6 +1,6 @@
 package com.inventario.Inventario.controllers;
 
-import com.inventario.Inventario.dtos.AdministratorRequestDTO;
+import com.inventario.Inventario.dtos.UserRequestDTO;
 import com.inventario.Inventario.entities.Administrator;
 import com.inventario.Inventario.services.AdministratorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,14 +33,14 @@ public class AdministratorController {
     }
 
     @PostMapping
-    public ResponseEntity<Administrator> createAdministrator(@RequestBody AdministratorRequestDTO administratorRequestDTO) {
-        Administrator newAdministrator = administratorService.createAdministrator(administratorRequestDTO);
+    public ResponseEntity<Administrator> createAdministrator(@RequestBody UserRequestDTO userRequestDTO) {
+        Administrator newAdministrator = administratorService.createAdministrator(userRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newAdministrator);
     }
 
     @Operation
     @PutMapping("/{id}")
-    public ResponseEntity<Administrator> updateAdministrator (@PathVariable Integer id, @RequestBody @Validated AdministratorRequestDTO updatedAdministrator) {
+    public ResponseEntity<Administrator> updateAdministrator (@PathVariable Integer id, @RequestBody @Validated UserRequestDTO updatedAdministrator) {
         Administrator updated = administratorService.updateAdministrator(id, updatedAdministrator);
         return ResponseEntity.ok(updated);
     }

@@ -13,7 +13,7 @@ import java.util.List;
 public class DebtResponseDTO {
     private Integer id;
     private Integer customerId;
-    private List<DebtDetailResponseDTO> details;
+    private List<DetailResponseDTO> details;
     private BigDecimal amountTotal;
     private BigDecimal amountDue;
     private BigDecimal amountPaid;

@@ -1,15 +1,10 @@
 package com.inventario.Inventario.services;
 
-import com.inventario.Inventario.dtos.DetailRequestDTO;
 import com.inventario.Inventario.entities.Product;
+import com.inventario.Inventario.exceptions.InsufficientStockException;
 import com.inventario.Inventario.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +12,37 @@ public class StockService {
 
     private final ProductRepository productRepository;
 
-    public Map<Integer, Product> validateAndUpdateStock(List<DetailRequestDTO> details) {
+    public void validateStock(Product p) {
+        if (p.getStock() == 0) {
+            throw new InsufficientStockException(
+                    String.format("Producto %s de ID %d, sin stock", p.getName(), p.getId()));
+        }
+    }
+
+    public void validateStock(Product p, Integer quantity) {
+        if (p.getStock() < quantity) {
+            throw new InsufficientStockException(
+                    String.format("Stock insuficiente. Producto %s de ID %d. Disponible: %d", p.getName(), p.getId(), p.getStock()));
+        }
+    }
+
+    public void increaseAndSaveStock(Product p) {
+        p.setStock(p.getStock()+1);
+        productRepository.save(p);
+    }
+
+    public void decreaseAndSaveStock(Product p) {
+        p.setStock(p.getStock() - 1);
+        productRepository.save(p);
+    }
+
+    public void updateAndSaveStock(Product p, Integer quantity, Integer selectedQuantity) {
+        int q = quantity - selectedQuantity;
+        p.setStock(p.getStock()-q);
+        productRepository.save(p);
+    }
+
+    /*public Map<Integer, Product> validateAndUpdateStock(List<DetailRequestDTO> details) {
         // Obtener todos los productId del detalle en una sola consulta
         Set<Integer> productIds = details.stream()
                 .map(DetailRequestDTO::getProductId)
@@ -44,5 +69,5 @@ public class StockService {
         }
         productRepository.saveAll(products);
         return productsMap;
-    }
+    }*/
 }

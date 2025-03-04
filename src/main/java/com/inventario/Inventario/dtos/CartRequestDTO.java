@@ -1,13 +1,14 @@
 package com.inventario.Inventario.dtos;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 public class CartRequestDTO {
-
-    @NotBlank
-    private LocalDateTime creationDate;
+    @NotNull
+    private Integer userId;
+    @NotNull
+    private Integer productId;
+    @NotNull
+    private Integer quantity;
 }

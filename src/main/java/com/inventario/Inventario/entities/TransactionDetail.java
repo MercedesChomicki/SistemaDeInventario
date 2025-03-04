@@ -14,7 +14,7 @@ public class TransactionDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Long id;
+    private Long id; // Cambiar a Integer
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

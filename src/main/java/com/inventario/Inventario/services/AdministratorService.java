@@ -1,6 +1,6 @@
 package com.inventario.Inventario.services;
 
-import com.inventario.Inventario.dtos.AdministratorRequestDTO;
+import com.inventario.Inventario.dtos.UserRequestDTO;
 import com.inventario.Inventario.entities.Administrator;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.repositories.AdministratorRepository;
@@ -27,7 +27,7 @@ public class AdministratorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Administrador", id));
     }
 
-    public Administrator createAdministrator(AdministratorRequestDTO dto) {
+    public Administrator createAdministrator(UserRequestDTO dto) {
         Administrator admin = new Administrator();
         admin.setFirstname(dto.getFirstname());
         admin.setLastname(dto.getLastname());
@@ -38,7 +38,7 @@ public class AdministratorService {
         return administratorRepository.save(admin);
     }
 
-    public Administrator updateAdministrator(Integer id, AdministratorRequestDTO updatedAdministrator) {
+    public Administrator updateAdministrator(Integer id, UserRequestDTO updatedAdministrator) {
         Administrator existingAdministrator = administratorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Administrador",id));
 

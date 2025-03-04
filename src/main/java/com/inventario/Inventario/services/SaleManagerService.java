@@ -1,10 +1,13 @@
 package com.inventario.Inventario.services;
 
+import com.inventario.Inventario.dtos.CartResponseDTO;
+import com.inventario.Inventario.dtos.DetailResponseDTO;
 import com.inventario.Inventario.dtos.SaleRequestDTO;
 import com.inventario.Inventario.dtos.SaleResponseDTO;
 import com.inventario.Inventario.entities.*;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.SaleMapper;
+import com.inventario.Inventario.repositories.ProductRepository;
 import com.inventario.Inventario.repositories.SaleDetailRepository;
 import com.inventario.Inventario.repositories.SaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +26,7 @@ public class SaleManagerService {
     private final SaleRepository saleRepository;
     private final SaleDetailRepository saleDetailRepository;
     private final SaleMapper saleMapper;
+    private final ProductRepository productRepository;
 
     public Sale getSaleById(Long id) {
         return saleRepository.findById(id)
@@ -35,17 +39,20 @@ public class SaleManagerService {
         return sale;
     }
 
-    public void validateSaleCreation(SaleRequestDTO dto) {
-        if (dto.getDetails() == null || dto.getDetails().isEmpty()) {
+    public void validateSaleCreation(SaleRequestDTO dto, CartResponseDTO cart) {
+        if (cart.getDetails() == null || cart.getDetails().isEmpty()) {
             throw new IllegalArgumentException("Debe haber al menos un producto registrado");
         }
         if (dto.getPayments() == null || dto.getPayments().isEmpty())
             throw new IllegalArgumentException("Debe haber al menos un pago registrado");
     }
 
-    public List<SaleDetail> processAndSaveSaleDetails(SaleRequestDTO dto, Sale sale, Map<Integer, Product> productsMap) {
-        List<SaleDetail> details = dto.getDetails().stream()
-                .map(detailDTO -> new SaleDetail(sale, productsMap.get(detailDTO.getProductId()), detailDTO.getQuantity()))
+    public List<SaleDetail> processAndSaveSaleDetails(Sale sale, List<DetailResponseDTO> cartDetails) {
+        List<SaleDetail> details = cartDetails.stream()
+                .map(detail -> {
+                    Optional<Product> product = productRepository.findById(detail.getProductId());
+                    return new SaleDetail(sale, product.orElse(null), detail.getQuantity());
+                })
                 .collect(Collectors.toList());
         sale.setDetails(details);
         saleDetailRepository.saveAll(details);
@@ -53,16 +60,20 @@ public class SaleManagerService {
     }
 
     public SaleResponseDTO saveSaleAndConvertToDTO(Sale sale, BigDecimal total, List<SalePayment> payments, List<SaleDetail> details) {
-        sale.setTotal(total);
-        sale.setPayments(payments);
-        sale.setDate(LocalDateTime.now());
-        sale.setDetails(details);
-        saleRepository.save(sale);
+        updateSaleWithDetails(sale, total, payments, details);
         SaleResponseDTO dto = saleMapper.toDTO(sale);
         dto.setDetails(sale.getDetails().stream()
                 .map(saleMapper::toDetailDTO) // Usa el mapper para cada detalle
                 .toList());
 
         return dto;
+    }
+
+    private void updateSaleWithDetails(Sale sale, BigDecimal total, List<SalePayment> payments, List<SaleDetail> details) {
+        sale.setTotal(total);
+        sale.setPayments(payments);
+        sale.setDate(LocalDateTime.now());
+        sale.setDetails(details);
+        saleRepository.save(sale);
     }
 }

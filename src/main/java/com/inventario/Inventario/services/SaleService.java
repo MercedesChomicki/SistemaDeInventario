@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +19,8 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final SaleMapper saleMapper;
     private final SaleManagerService saleManagerService;
-    private final StockService stockService;
     private final SalePaymentService paymentService;
+    private final CartService cartService;
 
     public List<SaleResponseDTO> getAllSalesSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
@@ -46,12 +45,14 @@ public class SaleService {
 
     @Transactional
     public SaleResponseDTO createSale(SaleRequestDTO dto) {
-        saleManagerService.validateSaleCreation(dto);
-        Map<Integer, Product> productsMap = stockService.validateAndUpdateStock(dto.getDetails());
+        CartResponseDTO cart = cartService.getCartByUserId(dto.getUserId());
+        saleManagerService.validateSaleCreation(dto, cart);
         Sale sale = saleManagerService.createAndSaveSale();
-        List<SaleDetail> details = saleManagerService.processAndSaveSaleDetails(dto, sale, productsMap);
+        List<SaleDetail> details = saleManagerService.processAndSaveSaleDetails(sale, cart.getDetails());
         BigDecimal total = paymentService.calculateTotal(details, dto.getPayments());
         List<SalePayment> payments = paymentService.processSalePayments(sale, dto.getPayments(), total);
-        return saleManagerService.saveSaleAndConvertToDTO(sale, total, payments, details);
+        SaleResponseDTO saleDTO = saleManagerService.saveSaleAndConvertToDTO(sale, total, payments, details);
+        cartService.clearCart(dto.getUserId());
+        return saleDTO;
     }
 }

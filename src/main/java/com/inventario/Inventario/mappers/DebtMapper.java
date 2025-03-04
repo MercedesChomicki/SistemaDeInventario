@@ -1,6 +1,5 @@
 package com.inventario.Inventario.mappers;
 
-import com.inventario.Inventario.dtos.DebtDetailResponseDTO;
 import com.inventario.Inventario.dtos.DebtResponseDTO;
 import com.inventario.Inventario.entities.Debt;
 import com.inventario.Inventario.entities.DebtDetail;

@@ -1,6 +1,6 @@
 package com.inventario.Inventario.controllers;
 
-import com.inventario.Inventario.dtos.SaleDetailResponseDTO;
+import com.inventario.Inventario.dtos.DetailResponseDTO;
 import com.inventario.Inventario.dtos.SaleRequestDTO;
 import com.inventario.Inventario.dtos.SaleResponseDTO;
 import com.inventario.Inventario.services.SaleService;
@@ -38,7 +38,7 @@ public class SaleController {
     }
 
     @GetMapping("/{id}/details")
-    public ResponseEntity<List<SaleDetailResponseDTO>> getSaleDetails(@PathVariable Long id) {
+    public ResponseEntity<List<DetailResponseDTO>> getSaleDetails(@PathVariable Long id) {
         SaleResponseDTO dto = saleService.getSaleById(id);
         return ResponseEntity.ok(dto.getDetails());
     }

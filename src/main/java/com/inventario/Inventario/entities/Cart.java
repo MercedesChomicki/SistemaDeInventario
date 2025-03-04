@@ -1,30 +1,28 @@
 package com.inventario.Inventario.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@NoArgsConstructor  // Crea un constructor vacío
-@AllArgsConstructor // Crea un constructor con todos los atributos
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 @Entity
 @Table(name = "carts")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id")
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Setter
-    @Column(nullable = false, name = "creation_date", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime creationDate;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
-    @PrePersist
-    public void prePersist() {
-        this.creationDate = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDateTime();
-    }
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartDetail> details = new ArrayList<>();
 }

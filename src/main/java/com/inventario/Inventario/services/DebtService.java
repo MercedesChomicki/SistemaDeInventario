@@ -24,7 +24,7 @@ public class DebtService {
     private final StockService stockService;
     private final DebtPaymentService debtPaymentService;
 
-    public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
+    /*public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
         return debtRepository.findAll(sort)
@@ -61,7 +61,7 @@ public class DebtService {
                 .stream()
                 .map(debtMapper::toDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     /*@Transactional
     public DebtResponseDTO updateDebtValues(Integer debtId){
