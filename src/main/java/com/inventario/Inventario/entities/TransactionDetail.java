@@ -29,11 +29,11 @@ public class TransactionDetail {
     @Column(nullable = false)
     private BigDecimal subtotal;
 
-    public TransactionDetail(Product product, Integer quantity, BigDecimal unitPrice, BigDecimal subtotal) {
+    public TransactionDetail(Product product, Integer quantity, BigDecimal unitPrice) {
         this.product = product;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
-        this.subtotal = subtotal;
+        this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     public void updateDetailValues(Integer quantity){

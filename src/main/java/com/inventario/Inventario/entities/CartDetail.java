@@ -7,8 +7,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Entity
@@ -23,7 +21,7 @@ public class CartDetail extends TransactionDetail {
     }
 
     public CartDetail(Cart cart, Product product, Integer quantity) {
-        super(product, quantity, product.getCashPrice(), product.getCashPrice().multiply(BigDecimal.valueOf(quantity)));
+        super(product, quantity, product.getCashPrice());
         this.cart = cart;
     }
 }

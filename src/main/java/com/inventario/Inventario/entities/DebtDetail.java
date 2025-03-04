@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Entity
@@ -20,7 +18,7 @@ public class DebtDetail extends TransactionDetail{
     }
 
     public DebtDetail(Debt debt, Product product, Integer quantity) {
-        super(product, quantity, product.getCashPrice(), product.getCashPrice().multiply(BigDecimal.valueOf(quantity)));
+        super(product, quantity, product.getCashPrice());
         this.debt = debt;
     }
 }
