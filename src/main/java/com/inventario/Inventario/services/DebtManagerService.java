@@ -141,5 +141,4 @@ public class DebtManagerService {
         debtRepository.save(debt);
         return debt.getStatus() == DebtStatus.PAID ? null : debtMapper.toDTO(debt);
     }
-
 }

@@ -26,11 +26,12 @@ public class CartController {
     }
 
     /**
-     * @param selectedQuantity Es la cantidad que ya tenía agregada al carrito
+     * @param oldQuantity Es la cantidad que ya tenía agregada al carrito
      */
     @PutMapping("/{userId}/update/{productId}")
-    public ResponseEntity<CartResponseDTO> updateQuantity(@PathVariable Integer userId, @PathVariable Integer productId, @RequestParam int quantity, @RequestParam int selectedQuantity) {
-        return ResponseEntity.ok(cartService.updateProductQuantity(userId, productId, quantity, selectedQuantity));
+    public ResponseEntity<String> updateQuantity(@PathVariable Integer userId, @PathVariable Integer productId, @RequestParam int newQuantity, @RequestParam int oldQuantity) {
+        cartService.updateProductQuantity(userId, productId, newQuantity, oldQuantity);
+        return ResponseEntity.ok("El producto "+productId+" se ha actualizado exitosamente");
     }
 
     @PutMapping("/{userId}/decrease/{productId}")
@@ -56,5 +57,4 @@ public class CartController {
         cartService.removeAllItems(userId);
         return ResponseEntity.ok("Carrito vaciado.");
     }
-
 }
