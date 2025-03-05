@@ -51,8 +51,8 @@ public class CartController {
         return ResponseEntity.ok("El producto "+productId+" se ha eliminado exitosamente");
     }
 
-    @PatchMapping("/{userId}/remove-all-items")
-    public ResponseEntity<String> removeAllItems(@RequestParam Integer userId) {
+    @DeleteMapping("/{userId}/remove-all-items")
+    public ResponseEntity<String> removeAllItems(@PathVariable Integer userId) {
         cartService.removeAllItems(userId);
         return ResponseEntity.ok("Carrito vaciado.");
     }

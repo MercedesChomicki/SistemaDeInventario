@@ -170,6 +170,9 @@ public class CartService {
     public void removeAllItems(Integer userId) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> createCart(userId));
+        if(cart.getDetails().isEmpty())
+            throw new IllegalArgumentException("El carrito ya está vacío");
+
         for(CartDetail detail : cart.getDetails()) {
             Product product = detail.getProduct();
             stockService.updateAndSaveStock(product, 0, detail.getQuantity());
