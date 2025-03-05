@@ -21,16 +21,20 @@ public class DebtService {
     private final DebtRepository debtRepository;
     private final DebtMapper debtMapper;
     private final DebtManagerService debtManagerService;
-    private final StockService stockService;
     private final DebtPaymentService debtPaymentService;
+    private final CartService cartService;
 
-    /*public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
+    public List<DebtResponseDTO> getAllDebtsSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
         return debtRepository.findAll(sort)
                 .stream()
-                .map(debtMapper::toDTO)
-                .collect(Collectors.toList());
+                .map(debt -> {
+                    DebtResponseDTO dto = debtMapper.toDTO(debt);
+                    dto.setDetails(debt.getDetails().stream()
+                            .map(debtMapper::toDetailDTO).toList());
+                    return dto;
+                }).toList();
     }
 
     public DebtResponseDTO getDebtById(Integer id) {
@@ -40,11 +44,13 @@ public class DebtService {
 
     @Transactional
     public DebtResponseDTO createDebt(DebtRequestDTO dto) {
-        debtManagerService.validateDebtCreation(dto);
-        Map<Integer, Product> productsMap = stockService.validateAndUpdateStock(dto.getDetails());
-        Debt debt = debtManagerService.getOrCreateDebt(dto.getCustomerId(), dto.getDate());
-        List<DebtDetail> details = debtManagerService.processAndSaveDebtDetails(dto, debt, productsMap);
-        return debtManagerService.saveDebt(debt, details, dto.getPayment().getAmount(), dto.getPayment().getPaymentMethod());
+        CartResponseDTO cart = cartService.getCartByUserId(dto.getUserId());
+        debtManagerService.validateDebtCreation(dto, cart);
+        Debt debt = debtManagerService.getOrCreateDebt(dto.getCustomerId());
+        List<DebtDetail> details = debtManagerService.processAndSaveDebtDetails(debt, cart.getDetails());
+        DebtResponseDTO debtDTO = debtManagerService.saveDebt(debt, details, dto.getPayment().getAmount(), dto.getPayment().getPaymentMethod());
+        cartService.clearCart(dto.getUserId());
+        return debtDTO;
     }
 
     @Transactional
@@ -61,7 +67,7 @@ public class DebtService {
                 .stream()
                 .map(debtMapper::toDTO)
                 .collect(Collectors.toList());
-    }*/
+    }
 
     /*@Transactional
     public DebtResponseDTO updateDebtValues(Integer debtId){

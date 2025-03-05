@@ -163,6 +163,13 @@ public class CartService {
     public void clearCart(Integer userId) {
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> createCart(userId));
+        cart.getDetails().clear();
+        cartRepository.save(cart);
+    }
+
+    public void removeAllItems(Integer userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseGet(() -> createCart(userId));
         for(CartDetail detail : cart.getDetails()) {
             Product product = detail.getProduct();
             stockService.updateAndSaveStock(product, 0, detail.getQuantity());

@@ -31,11 +31,9 @@ public class SaleService {
                     SaleResponseDTO dto = saleMapper.toDTO(sale);
                     // Mapear los detalles con el nombre del producto
                     dto.setDetails(sale.getDetails().stream()
-                            .map(saleMapper::toDetailDTO)
-                            .toList());
+                            .map(saleMapper::toDetailDTO).toList());
                     return dto;
-                })
-                .toList();
+                }).toList();
     }
 
     public SaleResponseDTO getSaleById(Long id) {

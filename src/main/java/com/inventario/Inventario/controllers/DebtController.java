@@ -19,10 +19,11 @@ public class DebtController {
 
     private final DebtService debtService;
 
-  /*  @GetMapping()
+    @GetMapping()
     public List<DebtResponseDTO> getAllDebts(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String direction) {
+            @RequestParam(required = false, defaultValue = "asc") String direction
+    ) {
         return debtService.getAllDebtsSorted(sortBy, direction);
     }
 
@@ -51,7 +52,7 @@ public class DebtController {
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction) {
         return debtService.getAllUnpaidDebts(sortBy, direction);
-    }*/
+    }
 
     /*@PatchMapping("/update-debt-values/debt/{id}")
     public ResponseEntity<DebtResponseDTO> updateDebtValues(@PathVariable Integer id) {
