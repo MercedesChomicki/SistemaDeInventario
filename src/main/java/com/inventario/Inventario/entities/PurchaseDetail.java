@@ -14,14 +14,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "cart_details")
-public class CartDetail extends TransactionDetail {
+@Table(name = "purchase_details")
+public class PurchaseDetail extends TransactionDetail {
     @ManyToOne
-    @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    @JoinColumn(name = "purchase_id", nullable = false)
+    private Purchase purchase;
 
-    public CartDetail(Cart cart, Product product, Integer quantity) {
-        super(product, quantity, product.getCashPrice());
-        this.cart = cart;
+    public PurchaseDetail(Purchase purchase, Product product, Integer quantity) {
+        super(product, quantity, product.getPurchasePrice());
+        this.purchase = purchase;
     }
 }

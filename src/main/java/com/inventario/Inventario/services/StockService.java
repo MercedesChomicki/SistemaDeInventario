@@ -24,4 +24,9 @@ public class StockService {
         product.setStock(product.getStock() - quantityChange);
         productRepository.save(product);
     }
+
+    public void increaseStock(Product product, int quantity) {
+        product.setStock(product.getStock() + quantity);
+        productRepository.save(product);
+    }
 }

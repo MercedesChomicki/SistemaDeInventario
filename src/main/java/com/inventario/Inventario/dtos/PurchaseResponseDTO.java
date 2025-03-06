@@ -9,10 +9,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SaleResponseDTO {
+public class PurchaseResponseDTO {
     private Long id;
-    private BigDecimal total;
+    private Integer supplierId;
     private List<DetailResponseDTO> details;
+    private BigDecimal total;
     private List<PaymentResponseDTO> payments;
+    private BigDecimal surcharge;
     private LocalDateTime date;
 }

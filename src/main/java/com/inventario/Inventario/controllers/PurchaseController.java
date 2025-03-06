@@ -1,6 +1,7 @@
 package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.PurchaseRequestDTO;
+import com.inventario.Inventario.dtos.PurchaseResponseDTO;
 import com.inventario.Inventario.entities.Purchase;
 import com.inventario.Inventario.services.PurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
     @GetMapping()
-    public List<Purchase> getAllPurchases(
+    public List<PurchaseResponseDTO> getAllPurchases(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
@@ -26,24 +27,18 @@ public class PurchaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Purchase> getPurchaseById(@PathVariable Integer id) {
+    public ResponseEntity<PurchaseResponseDTO> getPurchaseById(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseService.getPurchaseById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Purchase> createPurchase(@RequestBody PurchaseRequestDTO purchaseRequestDTO) {
-        Purchase newPurchase = purchaseService.createPurchase(purchaseRequestDTO);
+    public ResponseEntity<PurchaseResponseDTO> createPurchase(@RequestBody PurchaseRequestDTO purchaseRequestDTO) {
+        PurchaseResponseDTO newPurchase = purchaseService.createPurchase(purchaseRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newPurchase);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Purchase> updatePurchase(@PathVariable Integer id, @RequestBody PurchaseRequestDTO updatedPurchase) {
-        Purchase updated = purchaseService.updatePurchase(id, updatedPurchase);
-        return ResponseEntity.ok(updated);
-    }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePurchase(@PathVariable Integer id) {
+    public ResponseEntity<String> deletePurchase(@PathVariable Long id) {
         purchaseService.deletePurchase(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }

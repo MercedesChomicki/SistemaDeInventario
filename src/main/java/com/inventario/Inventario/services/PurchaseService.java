@@ -1,18 +1,19 @@
 package com.inventario.Inventario.services;
 
 import com.inventario.Inventario.dtos.PurchaseRequestDTO;
-import com.inventario.Inventario.entities.Purchase;
-import com.inventario.Inventario.entities.Supplier;
+import com.inventario.Inventario.dtos.PurchaseResponseDTO;
+import com.inventario.Inventario.entities.*;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
+import com.inventario.Inventario.mappers.PurchaseMapper;
 import com.inventario.Inventario.repositories.PurchaseRepository;
 import com.inventario.Inventario.repositories.SupplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,48 +21,47 @@ public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final SupplierRepository supplierRepository;
+    private final PurchasePaymentService paymentService;
+    private final PurchaseMapper purchaseMapper;
+    private final PurchaseManagerService purchaseManagerService;
 
-    public List<Purchase> getAllPurchasesSorted(String sortBy, String direction) {
+    public List<PurchaseResponseDTO> getAllPurchasesSorted(String sortBy, String direction) {
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sort = Sort.by(sortDirection, sortBy);
-        return purchaseRepository.findAll(sort);
+        return purchaseRepository.findAll(sort)
+                .stream()
+                .map(purchaseMapper::toDTO)
+                .toList();
     }
 
-    public Purchase getPurchaseById(Integer id) {
-        return purchaseRepository.findById(id)
+    public PurchaseResponseDTO getPurchaseById(Long id) {
+        Purchase purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Compra", id));
+        return purchaseMapper.toDTO(purchase);
     }
 
-    public Purchase createPurchase(PurchaseRequestDTO dto) {
-        Map<String, Object> entities = fetchRelatedEntities(dto);
+    @Transactional
+    public PurchaseResponseDTO createPurchase(PurchaseRequestDTO dto) {
+        if (dto.getDetails().isEmpty())
+            throw new IllegalArgumentException("Debe haber al menos un producto en la compra.");
 
-        Purchase purchase = new Purchase();
-        purchase.setSupplier((Supplier) entities.get("supplier"));
-
-        return purchaseRepository.save(purchase);
-    }
-
-    public Purchase updatePurchase(Integer id, PurchaseRequestDTO updatedPurchase) {
-        Purchase existingPurchase = purchaseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Purchase", id));
-
-        Map<String, Object> entities = fetchRelatedEntities(updatedPurchase);
-
-        if (updatedPurchase.getSupplierId() != null) existingPurchase.setSupplier((Supplier) entities.get("supplier"));
-
-        return purchaseRepository.save(existingPurchase);
-    }
-
-    private Map<String, Object> fetchRelatedEntities(PurchaseRequestDTO dto) {
         Supplier supplier = supplierRepository.findById(dto.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()));
 
-        Map<String, Object> entities = new HashMap<>();
-        entities.put("supplier", supplier);
-        return entities;
+        Purchase purchase = new Purchase(supplier, dto.getSurcharge());
+
+        List<PurchaseDetail> details = purchaseManagerService.processDetails(dto, purchase);
+        BigDecimal total = paymentService.calculateTotalWithoutSurcharge(details).add(dto.getSurcharge());
+        List<PurchasePayment> payments = paymentService.processPurchasePayments(purchase, dto.getPayments(), total.subtract(dto.getSurcharge()));
+
+        purchase.setDetails(details);
+        purchase.setTotal(total);
+        purchase.setPayments(payments);
+        purchaseRepository.save(purchase);
+        return purchaseMapper.toDTO(purchase);
     }
 
-    public void deletePurchase(Integer id) {
+    public void deletePurchase(Long id) {
         if (!purchaseRepository.existsById(id)) {
             throw new ResourceNotFoundException("Compra", id);
         }

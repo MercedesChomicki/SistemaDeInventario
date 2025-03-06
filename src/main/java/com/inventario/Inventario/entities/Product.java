@@ -19,25 +19,29 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     @Setter(AccessLevel.NONE)
-    @ToString.Include // Incluir en toString
+    @ToString.Include
     private Integer id;
 
     @Column(nullable = false, unique = true, length = 45)
-    @ToString.Include // Incluir en toString
+    @ToString.Include
     private String code;
 
     @Column(nullable = false, length = 200)
-    @ToString.Include // Incluir en toString
+    @ToString.Include
     private String name;
 
     private String description;
 
     @Column(name = "cash_price", nullable = false, precision = 10, scale = 2)
-    @ToString.Include // Incluir en toString
+    @ToString.Include
     private BigDecimal cashPrice;
 
+    @Column(name = "purchase_price", nullable = false, precision = 10, scale = 2)
+    @ToString.Include
+    private BigDecimal purchasePrice;
+
     @Column(nullable = false)
-    @ToString.Include // Incluir en toString
+    @ToString.Include
     private int stock;
 
     @Column(name = "image_url", length = 254)
@@ -60,8 +64,5 @@ public class Product {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
-    // Método para calcular el precio con tarjeta (si se necesita)
-    public BigDecimal getPriceWithCard(BigDecimal cardPercentageIncrease) {
-        return this.cashPrice.add(this.cashPrice.multiply(cardPercentageIncrease).divide(BigDecimal.valueOf(100)));
-    }
+
 }
