@@ -1,5 +1,6 @@
 package com.inventario.Inventario.mappers;
 
+import com.inventario.Inventario.dtos.ProductFullResponseDTO;
 import com.inventario.Inventario.dtos.ProductRequestDTO;
 import com.inventario.Inventario.dtos.ProductResponseDTO;
 import com.inventario.Inventario.entities.Product;
@@ -19,4 +20,9 @@ public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true) // Opcional: Para evitar sobrescribir IDs
     Product toEntity(ProductRequestDTO dto);
+
+    @Mapping(source = "species.name", target = "species") // Extrae el nombre de la especie
+    @Mapping(source = "category.name", target = "category") // Extrae el nombre de la categoría
+    @Mapping(target = "supplier",  expression = "java(product.getSupplier().getFirstname() + \" \" + product.getSupplier().getLastname())")
+    ProductFullResponseDTO toFullDTO(Product product);
 }

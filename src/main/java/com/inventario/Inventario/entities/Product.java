@@ -40,6 +40,9 @@ public class Product {
     @ToString.Include
     private BigDecimal purchasePrice;
 
+    @Column(name = "percentage_increase", nullable = false, precision = 5, scale = 2)
+    private BigDecimal percentageIncrease;
+
     @Column(nullable = false)
     @ToString.Include
     private int stock;
@@ -64,5 +67,36 @@ public class Product {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
+    public Product (String code, String name, String description, BigDecimal purchasePrice,
+                    BigDecimal percentageIncrease, BigDecimal cashPrice, int stock, String imageUrl,
+                    LocalDate expirationDate, Species species, Category category, Supplier supplier
+    ) {
+        this.code = code;
+        this.name = name;
+        this.description = description;
+        this.purchasePrice = purchasePrice;
+        this.percentageIncrease = percentageIncrease;
+        this.cashPrice = cashPrice.compareTo(BigDecimal.ZERO) > 0 ? cashPrice : purchasePrice.add(purchasePrice.multiply(percentageIncrease.divide(new BigDecimal("100"))));
+        this.stock = stock;
+        this.imageUrl = imageUrl;
+        this.expirationDate = expirationDate;
+        this.species = species;
+        this.category = category;
+        this.supplier = supplier;
+    }
+
+    private void updateCashPrice() {
+        this.cashPrice = this.purchasePrice.add(this.purchasePrice.multiply(this.percentageIncrease.divide(new BigDecimal("100"))));
+    }
+
+    public void setPurchasePrice(BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+        updateCashPrice();
+    }
+
+    public void setPercentageIncrease(BigDecimal percentageIncrease) {
+        this.percentageIncrease = percentageIncrease;
+        updateCashPrice();
+    }
 
 }
