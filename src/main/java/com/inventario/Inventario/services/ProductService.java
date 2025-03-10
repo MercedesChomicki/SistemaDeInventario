@@ -81,7 +81,7 @@ public class ProductService {
         if (updatedProduct.getImageUrl() != null) product.setImageUrl(updatedProduct.getImageUrl());
         if (updatedProduct.getPurchasePrice() != null) product.setPurchasePrice(updatedProduct.getPurchasePrice());
         if (updatedProduct.getPercentageIncrease() != null) product.setPercentageIncrease(updatedProduct.getPercentageIncrease());
-        if (updatedProduct.getCashPrice().compareTo(BigDecimal.ZERO) > 0) product.setCashPrice(updatedProduct.getCashPrice());
+        if (updatedProduct.getCashPrice().compareTo(BigDecimal.ZERO) > 0) product.setPrice(updatedProduct.getCashPrice());
 
         if (updatedProduct.getStock() <= 0) throw new BusinessException("El stock debe ser mayor a 0.");
         else product.setStock(updatedProduct.getStock());
@@ -133,7 +133,7 @@ public class ProductService {
     public ProductResponseDTO increasePrice(Integer id, BigDecimal newPrice) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        if (newPrice != null) product.setCashPrice(newPrice);
+        if (newPrice != null) product.setPrice(newPrice);
         Product updated = productRepository.save(product);
         return productMapper.toDTO(updated);
     }
@@ -143,7 +143,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
         if(percentage != null) {
             BigDecimal percentageIncrease = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
-            product.setCashPrice(product.getCashPrice().multiply(percentageIncrease));
+            product.setPrice(product.getPrice().multiply(percentageIncrease));
         }
         Product updated = productRepository.save(product);
         return productMapper.toDTO(updated);

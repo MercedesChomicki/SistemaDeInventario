@@ -18,7 +18,7 @@ public class SaleDetail extends TransactionDetail {
     private Sale sale;
 
     public SaleDetail(Sale sale, Product product, Integer quantity) {
-        super(product, quantity, product.getCashPrice());
+        super(product, quantity, product.getPrice());
         this.sale = sale;
     }
 }

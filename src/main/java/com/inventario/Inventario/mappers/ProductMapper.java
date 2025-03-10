@@ -12,7 +12,7 @@ import org.mapstruct.factory.Mappers;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    @Mapping(source = "cashPrice", target = "price") // Mapea cashPrice a price
+    @Mapping(source = "price", target = "price") // Mapea cashPrice a price
     @Mapping(source = "species.name", target = "species") // Extrae el nombre de la especie
     @Mapping(source = "category.name", target = "category") // Extrae el nombre de la categoría
     @Mapping(target = "supplier",  expression = "java(product.getSupplier().getSellerName())") // Extrae el nombre del proveedor

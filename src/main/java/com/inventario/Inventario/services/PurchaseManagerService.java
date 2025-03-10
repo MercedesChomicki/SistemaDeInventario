@@ -38,7 +38,7 @@ public class PurchaseManagerService {
         Product product = productRepository.findById(detail.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", detail.getProductId()));
 
-        if(!product.getPurchasePrice().equals(detail.getPrice())) {
+        if(!product.getCost().equals(detail.getPrice())) {
             product.setPurchasePrice(detail.getPrice());
             updatedProducts.add(product);
         }

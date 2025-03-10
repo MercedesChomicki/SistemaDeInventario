@@ -33,13 +33,13 @@ public class Product {
 
     private String description;
 
-    @Column(name = "cash_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "cost", nullable = false, precision = 10, scale = 2)
     @ToString.Include
-    private BigDecimal cashPrice;
+    private BigDecimal cost;
 
-    @Column(name = "purchase_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
     @ToString.Include
-    private BigDecimal purchasePrice;
+    private BigDecimal price;
 
     @Column(name = "percentage_increase", nullable = false, precision = 5, scale = 2)
     private BigDecimal percentageIncrease;
@@ -66,16 +66,16 @@ public class Product {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
-    public Product (String code, String name, String description, BigDecimal purchasePrice,
-                    BigDecimal percentageIncrease, BigDecimal cashPrice, int stock, String imageUrl,
+    public Product (String code, String name, String description, BigDecimal cost,
+                    BigDecimal percentageIncrease, BigDecimal price, int stock, String imageUrl,
                     LocalDate expirationDate, Species species, Category category, Supplier supplier
     ) {
         this.code = code;
         this.name = name;
         this.description = description;
-        this.purchasePrice = purchasePrice;
+        this.cost = cost;
         this.percentageIncrease = percentageIncrease;
-        this.cashPrice = cashPrice.compareTo(BigDecimal.ZERO) > 0 ? cashPrice : purchasePrice.add(purchasePrice.multiply(percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
+        this.price = price.compareTo(BigDecimal.ZERO) > 0 ? price : cost.add(cost.multiply(percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
         this.stock = stock;
         this.imageUrl = imageUrl;
         this.expirationDate = expirationDate;
@@ -85,11 +85,11 @@ public class Product {
     }
 
     private void updateCashPrice() {
-        this.cashPrice = this.purchasePrice.add(this.purchasePrice.multiply(this.percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
+        this.price = this.cost.add(this.cost.multiply(this.percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
     }
 
     public void setPurchasePrice(BigDecimal purchasePrice) {
-        this.purchasePrice = purchasePrice;
+        this.cost = purchasePrice;
         updateCashPrice();
     }
 

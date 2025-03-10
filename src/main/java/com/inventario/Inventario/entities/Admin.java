@@ -14,12 +14,22 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "admins")
 public class Admin {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id")
     @Setter(AccessLevel.NONE)
     private Integer id;
+
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    private Boolean active;
 
     @Column(nullable = false, length = 100)
     private String firstname;
@@ -30,14 +40,9 @@ public class Admin {
     @Column(nullable = false, length = 254, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 32)
-    private String password;
-
     @Column(length = 45)
     private String phone;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    @Setter(AccessLevel.NONE)
     private LocalDateTime registration_time;
 
     @PrePersist

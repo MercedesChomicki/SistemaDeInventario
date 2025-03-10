@@ -21,7 +21,7 @@ public class PurchaseDetail extends TransactionDetail {
     private Purchase purchase;
 
     public PurchaseDetail(Purchase purchase, Product product, Integer quantity) {
-        super(product, quantity, product.getPurchasePrice());
+        super(product, quantity, product.getCost());
         this.purchase = purchase;
     }
 }
