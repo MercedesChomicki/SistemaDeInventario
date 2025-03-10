@@ -1,7 +1,7 @@
 package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.UserRequestDTO;
-import com.inventario.Inventario.entities.Administrator;
+import com.inventario.Inventario.entities.Admin;
 import com.inventario.Inventario.services.AdministratorService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class AdministratorController {
     private final AdministratorService administratorService;
 
     @GetMapping()
-    public List<Administrator> getAllAdministrators(
+    public List<Admin> getAllAdministrators(
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String direction
     ) {
@@ -28,20 +28,20 @@ public class AdministratorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Administrator> getAdministratorById(@PathVariable Integer id) {
+    public ResponseEntity<Admin> getAdministratorById(@PathVariable Integer id) {
         return ResponseEntity.ok(administratorService.getAdministratorById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Administrator> createAdministrator(@RequestBody UserRequestDTO userRequestDTO) {
-        Administrator newAdministrator = administratorService.createAdministrator(userRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAdministrator);
+    public ResponseEntity<Admin> createAdministrator(@RequestBody UserRequestDTO userRequestDTO) {
+        Admin newAdmin = administratorService.createAdministrator(userRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAdmin);
     }
 
     @Operation
     @PutMapping("/{id}")
-    public ResponseEntity<Administrator> updateAdministrator (@PathVariable Integer id, @RequestBody @Validated UserRequestDTO updatedAdministrator) {
-        Administrator updated = administratorService.updateAdministrator(id, updatedAdministrator);
+    public ResponseEntity<Admin> updateAdministrator (@PathVariable Integer id, @RequestBody @Validated UserRequestDTO updatedAdministrator) {
+        Admin updated = administratorService.updateAdministrator(id, updatedAdministrator);
         return ResponseEntity.ok(updated);
     }
 

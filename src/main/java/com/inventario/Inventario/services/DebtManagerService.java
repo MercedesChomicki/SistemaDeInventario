@@ -2,6 +2,7 @@ package com.inventario.Inventario.services;
 
 import com.inventario.Inventario.dtos.*;
 import com.inventario.Inventario.entities.*;
+import com.inventario.Inventario.entities.Customer;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.DebtMapper;
 import com.inventario.Inventario.repositories.CustomerRepository;

@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
-@NoArgsConstructor  // Crea un constructor vacío
-@AllArgsConstructor // Crea un constructor con todos los atributos
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString(onlyExplicitlyIncluded = true)  // Solo incluye los campos especificados
@@ -50,9 +51,7 @@ public class Product {
     @Column(name = "image_url", length = 254)
     private String imageUrl;
 
-    @Column(nullable = false)
     private boolean active = true;
-
     private LocalDate expirationDate;
 
     @ManyToOne
@@ -76,7 +75,7 @@ public class Product {
         this.description = description;
         this.purchasePrice = purchasePrice;
         this.percentageIncrease = percentageIncrease;
-        this.cashPrice = cashPrice.compareTo(BigDecimal.ZERO) > 0 ? cashPrice : purchasePrice.add(purchasePrice.multiply(percentageIncrease.divide(new BigDecimal("100"))));
+        this.cashPrice = cashPrice.compareTo(BigDecimal.ZERO) > 0 ? cashPrice : purchasePrice.add(purchasePrice.multiply(percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
         this.stock = stock;
         this.imageUrl = imageUrl;
         this.expirationDate = expirationDate;
@@ -86,7 +85,7 @@ public class Product {
     }
 
     private void updateCashPrice() {
-        this.cashPrice = this.purchasePrice.add(this.purchasePrice.multiply(this.percentageIncrease.divide(new BigDecimal("100"))));
+        this.cashPrice = this.purchasePrice.add(this.purchasePrice.multiply(this.percentageIncrease.divide(new BigDecimal("100"), RoundingMode.HALF_UP)));
     }
 
     public void setPurchasePrice(BigDecimal purchasePrice) {
@@ -98,5 +97,4 @@ public class Product {
         this.percentageIncrease = percentageIncrease;
         updateCashPrice();
     }
-
 }

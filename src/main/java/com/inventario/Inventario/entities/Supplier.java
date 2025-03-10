@@ -3,44 +3,8 @@ package com.inventario.Inventario.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-/*
-     + DATOS FISCALES
-        1. Tipo de documento:
-          - DNI
-          - CUIL/CUIT
-
-        2. Número (de DNI, CUIT o CUIL)
-
-        3. Razón social (Nombre de la Empresa - Opcional)
-
-        4. Nombre del vendedor
-
-        5. Categoría impositiva:
-          - Responsable inscripto
-          - Consumidor final
-          - Monotributista
-          - Exento
-          - IVA no alcanzado
-
-        6. Personería:
-          - Fisica
-          - Jurídica (Empresa)
-
-     + DOMICILIO
-        1. País
-        2. Provincia
-        3. Ciudad/Localidad
-        4. Domicilio
-        5. Piso/Depto
-        6. Código Postal
-
-     + CONTACTO
-        1. Teléfono
-        2. Email
-*/
-
 @NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -49,22 +13,43 @@ public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "supplier_id")
-    @Setter(AccessLevel.NONE) // Evita setter solo para el id
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
-    @Column(nullable = false, length = 100)
-    private String firstname;
+    // FISCAL DATA
+    @NonNull // Usado para el contructor con todos los atributos excepto el ID
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
+    @NonNull
+    private String documentNumber;
+    @NonNull
+    private String businessName; // Razón social
+    @NonNull
+    private String sellerName;
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private TaxCategory taxCategory;
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private LegalEntity legalEntity;
 
-    @Column(nullable = false, length = 45)
-    private String lastname;
+    // ADDRESS
+    @NonNull
+    private String country;
+    @NonNull
+    private String province;
+    @NonNull
+    private String city;
+    @NonNull
+    private String address;
+    @NonNull
+    private String floorOrApartment;
+    @NonNull
+    private String postalCode;
 
-    @Column(name = "phone", nullable = false, length = 45)
+    // CONTACT
+    @NonNull
     private String phone;
-
-    @Column(nullable = false, length = 100)
+    @NonNull
     private String email;
-
-    @Column(nullable = false, length = 100)
-    private String company;
-
 }

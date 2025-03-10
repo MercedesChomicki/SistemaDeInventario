@@ -1,29 +1,35 @@
 package com.inventario.Inventario.dtos;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import com.inventario.Inventario.entities.DocumentType;
+import com.inventario.Inventario.entities.LegalEntity;
+import com.inventario.Inventario.entities.TaxCategory;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 
 @Getter
 public class SupplierRequestDTO {
 
-    @Schema(example = "José")
-    @NotBlank
-    private String firstname;
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
+    private String documentNumber;
+    private String businessName; // Razón social
+    private String sellerName;
 
-    @Schema(example = "Pérez")
-    @NotBlank
-    private String lastname;
+    @Enumerated(EnumType.STRING)
+    private TaxCategory taxCategory;
 
-    @Schema(example = "2494102030")
-    @NotBlank
+    @Enumerated(EnumType.STRING)
+    private LegalEntity legalEntity;
+
+    private String country;
+    private String province;
+    private String city;
+    private String address;
+    private String floorOrApartment;
+    private String postalCode;
+
     private String phone;
-
-    @Schema(example = "joseperez@gmail.com")
-    @NotBlank
     private String email;
-
-    @NotBlank
-    private String company;
 
 }

@@ -3,6 +3,7 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.dtos.PurchaseRequestDTO;
 import com.inventario.Inventario.dtos.PurchaseResponseDTO;
 import com.inventario.Inventario.entities.*;
+import com.inventario.Inventario.entities.Supplier;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.PurchaseMapper;
 import com.inventario.Inventario.repositories.PurchaseRepository;

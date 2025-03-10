@@ -14,7 +14,6 @@ import com.inventario.Inventario.repositories.CategoryRepository;
 import com.inventario.Inventario.repositories.ProductRepository;
 import com.inventario.Inventario.repositories.SpeciesRepository;
 import com.inventario.Inventario.repositories.SupplierRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -121,11 +120,6 @@ public class ProductService {
             throw new ResourceNotFoundException("Producto", id);
         }
         productRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void decreaseStock(Product product, int quantity) {
-        product.setStock(product.getStock() - quantity);
     }
 
     public ProductResponseDTO increaseStock(Integer id, int quantity) {

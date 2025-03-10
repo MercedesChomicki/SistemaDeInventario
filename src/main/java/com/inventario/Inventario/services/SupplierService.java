@@ -28,23 +28,33 @@ public class SupplierService {
     }
 
     public Supplier createSupplier(SupplierRequestDTO dto) {
-        Supplier supplier = new Supplier();
-        supplier.setFirstname(dto.getFirstname());
-        supplier.setLastname(dto.getLastname());
-        supplier.setEmail(dto.getEmail());
-        supplier.setPhone(dto.getPhone());
-        supplier.setCompany(dto.getCompany());
+        Supplier supplier = new Supplier(dto.getDocumentType(), dto.getDocumentNumber(),
+                dto.getBusinessName(), dto.getSellerName(), dto.getTaxCategory(),
+                dto.getLegalEntity(), dto.getCountry(), dto.getProvince(), dto.getCity(),
+                dto.getAddress(), dto.getFloorOrApartment(), dto.getPostalCode(),
+                dto.getPhone(), dto.getEmail());
+
         return supplierRepository.save(supplier);
     }
 
     public Supplier updateSupplier(Integer id, SupplierRequestDTO updatedSupplier) {
         Supplier existingSupplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proveedor",id));
-        if(updatedSupplier.getFirstname() != null) existingSupplier.setFirstname(updatedSupplier.getFirstname());
-        if(updatedSupplier.getLastname() != null) existingSupplier.setLastname(updatedSupplier.getLastname());
+
+        if(updatedSupplier.getDocumentType() != null) existingSupplier.setDocumentType(updatedSupplier.getDocumentType());
+        if(updatedSupplier.getDocumentNumber() != null) existingSupplier.setDocumentNumber(updatedSupplier.getDocumentNumber());
+        if(updatedSupplier.getBusinessName() != null) existingSupplier.setBusinessName(updatedSupplier.getBusinessName());
+        if(updatedSupplier.getSellerName() != null) existingSupplier.setSellerName(updatedSupplier.getSellerName());
+        if(updatedSupplier.getTaxCategory() != null) existingSupplier.setTaxCategory(updatedSupplier.getTaxCategory());
+        if (updatedSupplier.getLegalEntity() != null) existingSupplier.setLegalEntity(updatedSupplier.getLegalEntity());
+        if(updatedSupplier.getCountry() != null) existingSupplier.setCountry(updatedSupplier.getCountry());
+        if(updatedSupplier.getProvince() != null) existingSupplier.setProvince(updatedSupplier.getProvince());
+        if(updatedSupplier.getCity() != null) existingSupplier.setCity(updatedSupplier.getCity());
+        if(updatedSupplier.getAddress() != null) existingSupplier.setAddress(updatedSupplier.getAddress());
+        if(updatedSupplier.getFloorOrApartment() != null) existingSupplier.setFloorOrApartment(updatedSupplier.getFloorOrApartment());
+        if(updatedSupplier.getPostalCode() != null) existingSupplier.setPostalCode(updatedSupplier.getPostalCode());
         if(updatedSupplier.getPhone() != null) existingSupplier.setPhone(updatedSupplier.getPhone());
         if(updatedSupplier.getEmail() != null) existingSupplier.setEmail(updatedSupplier.getEmail());
-        if(updatedSupplier.getCompany() != null) existingSupplier.setCompany(updatedSupplier.getCompany());
 
         return supplierRepository.save(existingSupplier);
     }
@@ -55,5 +65,4 @@ public class SupplierService {
         }
         supplierRepository.deleteById(id);
     }
-
 }

@@ -15,7 +15,7 @@ public interface ProductMapper {
     @Mapping(source = "cashPrice", target = "price") // Mapea cashPrice a price
     @Mapping(source = "species.name", target = "species") // Extrae el nombre de la especie
     @Mapping(source = "category.name", target = "category") // Extrae el nombre de la categoría
-    @Mapping(target = "supplier",  expression = "java(product.getSupplier().getFirstname() + \" \" + product.getSupplier().getLastname())") // Extrae el nombre del proveedor
+    @Mapping(target = "supplier",  expression = "java(product.getSupplier().getSellerName())") // Extrae el nombre del proveedor
     ProductResponseDTO toDTO(Product product);
 
     @Mapping(target = "id", ignore = true) // Opcional: Para evitar sobrescribir IDs
@@ -23,6 +23,6 @@ public interface ProductMapper {
 
     @Mapping(source = "species.name", target = "species") // Extrae el nombre de la especie
     @Mapping(source = "category.name", target = "category") // Extrae el nombre de la categoría
-    @Mapping(target = "supplier",  expression = "java(product.getSupplier().getFirstname() + \" \" + product.getSupplier().getLastname())")
+    @Mapping(target = "supplier",  expression = "java(product.getSupplier().getSellerName())")
     ProductFullResponseDTO toFullDTO(Product product);
 }
