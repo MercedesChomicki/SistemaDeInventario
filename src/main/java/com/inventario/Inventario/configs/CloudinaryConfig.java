@@ -1,16 +1,11 @@
 package com.inventario.Inventario.configs;
 
-import com.cloudinary.Cloudinary;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.util.Map;
 
 @Configuration
 public class CloudinaryConfig {
 
-    @Value("${cloudinary.cloud-name}")
+    /*@Value("${cloudinary.cloud-name}")
     private String cloudName;
 
     @Value("${cloudinary.api-key}")
@@ -27,6 +22,6 @@ public class CloudinaryConfig {
                 "api_secret", apiSecret
         );
         return new Cloudinary(config);
-    }
+    }*/
 }
 

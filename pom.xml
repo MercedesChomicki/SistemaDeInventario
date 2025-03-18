@@ -61,11 +61,11 @@
 		</dependency>
 
 		<!--Cloudinary-->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.cloudinary</groupId>
 			<artifactId>cloudinary-http44</artifactId>
 			<version>1.39.0</version>
-		</dependency>
+		</dependency>-->
 
 		<!--Lombok-->
 		<dependency>
@@ -111,6 +111,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.minidev</groupId>
+					<artifactId>json-smart</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
