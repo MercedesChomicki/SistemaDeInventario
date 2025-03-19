@@ -3,6 +3,7 @@ package com.inventario.Inventario.controllers;
 import com.inventario.Inventario.dtos.LoginRequest;
 import com.inventario.Inventario.dtos.UserRequestDTO;
 import com.inventario.Inventario.dtos.UserResponseDTO;
+import com.inventario.Inventario.security.JwtService;
 import com.inventario.Inventario.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,22 +24,24 @@ public class AuthController {
 
     private final AuthenticationManager authManager;
     private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest u) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest u) {
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(u.getUsername(), u.getPassword());
         try {
             Authentication authentication = authManager.authenticate(token);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Welcome");
-            response.put("username", u.getUsername());
 
-            return ResponseEntity.ok(response);
+            if(authentication.isAuthenticated()) {
+                String jwtToken = jwtService.generateToken(u.getUsername());
+                return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+            }
+
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Credenciales inválidas"));
+            // logger
         }
+        return new ResponseEntity<>("Invalid Credentials",HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/register")
@@ -50,4 +50,3 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 }
-

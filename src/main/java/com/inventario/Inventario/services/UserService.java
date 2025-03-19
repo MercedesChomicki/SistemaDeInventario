@@ -23,8 +23,11 @@ public class UserService {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder pwdEncoder;
 
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toDTO)
+                .toList();
     }
 
     public UserEntity getUserById(Integer id) {

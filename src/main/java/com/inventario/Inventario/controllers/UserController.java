@@ -1,6 +1,6 @@
 package com.inventario.Inventario.controllers;
 
-import com.inventario.Inventario.entities.UserEntity;
+import com.inventario.Inventario.dtos.UserResponseDTO;
 import com.inventario.Inventario.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserEntity> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
