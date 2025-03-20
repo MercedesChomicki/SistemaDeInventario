@@ -15,8 +15,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserResponseDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @DeleteMapping("/{id}")
