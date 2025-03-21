@@ -3,10 +3,10 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.dtos.UserResponseDTO;
 import com.inventario.Inventario.entities.UserEntity;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
-import com.inventario.Inventario.mappers.UserMapper;
+import com.inventario.Inventario.mappers.UserEntityMapper;
 import com.inventario.Inventario.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,18 +16,18 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final BCryptPasswordEncoder pwdEncoder;
+    private final UserEntityMapper userEntityMapper;
 
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(userMapper::toDTO)
+                .map(userEntityMapper::toDTO)
                 .toList();
     }
 
-    public UserEntity getUserById(Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("UserEntity", id));
+    public UserResponseDTO getUserById(Integer id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
+        return userEntityMapper.toDTO(user);
     }
 
     public void deleteUser(Integer id) {

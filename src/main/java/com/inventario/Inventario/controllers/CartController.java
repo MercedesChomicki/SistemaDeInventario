@@ -2,6 +2,7 @@ package com.inventario.Inventario.controllers;
 
 import com.inventario.Inventario.dtos.CartRequestDTO;
 import com.inventario.Inventario.dtos.CartResponseDTO;
+import com.inventario.Inventario.dtos.CartUptRequestDTO;
 import com.inventario.Inventario.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,13 @@ public class CartController {
     @PostMapping("/add")
     public ResponseEntity<CartResponseDTO> addToCart(@RequestBody CartRequestDTO request) {
         CartResponseDTO dto = cartService.addToCart(request.getUserId(), request.getProductId(), request.getQuantity());
+        return ResponseEntity.ok(dto);
+    }
+
+    @PatchMapping("/{cartId}")
+    public ResponseEntity<CartResponseDTO> updateCart(@PathVariable Integer cartId,
+                                                      @RequestBody CartUptRequestDTO request) {
+        CartResponseDTO dto = cartService.updateCart(cartId, request);
         return ResponseEntity.ok(dto);
     }
 

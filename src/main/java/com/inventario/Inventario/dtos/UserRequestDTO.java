@@ -1,12 +1,10 @@
 package com.inventario.Inventario.dtos;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.inventario.Inventario.entities.UserRole;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import java.util.Set;
+import lombok.Data;
 
-@Getter
+@Data
 public class UserRequestDTO {
     @NotBlank
     private String username;
@@ -19,7 +17,6 @@ public class UserRequestDTO {
     @NotBlank
     private String email;
     @NotBlank
-    @JsonDeserialize(contentAs = UserRole.class)
-    private Set<UserRole> roles;
+    private UserRole role;
     private String phone;
 }

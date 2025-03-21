@@ -4,7 +4,6 @@ import com.inventario.Inventario.entities.UserRole;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -17,7 +16,7 @@ public class UserResponseDTO {
     private String firstname;
     private String lastname;
     private String email;
-    private Set<UserRole> roles;
+    private UserRole role;
     private String phone;
     private LocalDateTime registrationTime;
 }

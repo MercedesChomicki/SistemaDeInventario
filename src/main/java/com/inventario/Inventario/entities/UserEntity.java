@@ -11,8 +11,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -46,24 +44,9 @@ public class UserEntity {
     @Size(max = 80)
     private String email;
 
-    /** ManyToMany (
-     * fetch = FetchType.EAGER Para que cuando consulte el usuario traiga TODOS los roles asociados.
-     * targetEntity = UserRoleEntity.class Es con la entidad con la que se va a establecer la relación.
-     * cascade = CascadeType.PERSIST Guarda en la db las entidades relacionadas en caso de que aún no existan.
-     )
-     JoinTable (
-     * name = "user_roles" Nombre de la tabla intermedia.
-     * joinColumns = @JoinColumn(name = "user_id") Configura la clave foránea en UserEntity
-     * inverseJoinColumns = @JoinColumn(name = "role_id") Configura la clave foránea de UserRoleEntity
-     )
-     Set: no permite tener elementos duplicados
-     */
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = UserRoleEntity.class, cascade = CascadeType.PERSIST)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<UserRoleEntity> roles;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
 
     @Column(length = 45)
     private String phone;

@@ -3,7 +3,9 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.entities.Cart;
 import com.inventario.Inventario.entities.CartDetail;
 import com.inventario.Inventario.entities.Product;
+import com.inventario.Inventario.entities.UserEntity;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
+import com.inventario.Inventario.mappers.UserEntityMapper;
 import com.inventario.Inventario.repositories.CartRepository;
 import com.inventario.Inventario.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class CartManagerService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final StockService stockService;
+    private final UserEntityMapper userEntityMapper;
 
     public Cart getCartByUserId(Integer userId){
         return cartRepository.findByUserId(userId)
@@ -27,10 +30,11 @@ public class CartManagerService {
     }
 
     public Cart getOrCreateCart(Integer userId) {
+        UserEntity user = userEntityMapper.toEntity(userService.getUserById(userId));
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart cart = new Cart();
-                    cart.setUser(userService.getUserById(userId));
+                    cart.setUser(user);
                     return cartRepository.save(cart);
                 });
     }
