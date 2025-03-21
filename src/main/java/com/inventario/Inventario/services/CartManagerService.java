@@ -1,5 +1,7 @@
 package com.inventario.Inventario.services;
 
+import com.inventario.Inventario.dtos.CartUptRequestDTO;
+import com.inventario.Inventario.dtos.UserResponseDTO;
 import com.inventario.Inventario.entities.Cart;
 import com.inventario.Inventario.entities.CartDetail;
 import com.inventario.Inventario.entities.Product;
@@ -78,6 +80,14 @@ public class CartManagerService {
         validateAndUpdateStock(product, quantity, 0);
         CartDetail detail = getOrCreateCartDetail(cart, product);
         updateCartDetailQuantity(detail, detail.getQuantity() + quantity);
+        return cartRepository.save(cart);
+    }
+
+    public Cart updateCartUser(Integer userId, CartUptRequestDTO dto) {
+        Cart cart = getCartByUserId(userId);
+        UserResponseDTO userDTO = userService.getUserById(dto.getUserId());
+        UserEntity user = userEntityMapper.toEntity(userDTO);
+        cart.setUser(user);
         return cartRepository.save(cart);
     }
 

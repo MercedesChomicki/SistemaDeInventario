@@ -1,4 +1,4 @@
-package com.inventario.Inventario.services;
+package com.inventario.Inventario.security.services;
 
 import com.inventario.Inventario.dtos.LoginRequestDTO;
 import com.inventario.Inventario.dtos.UserRequestDTO;
@@ -6,7 +6,6 @@ import com.inventario.Inventario.dtos.UserResponseDTO;
 import com.inventario.Inventario.entities.UserEntity;
 import com.inventario.Inventario.mappers.UserEntityMapper;
 import com.inventario.Inventario.repositories.UserRepository;
-import com.inventario.Inventario.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;

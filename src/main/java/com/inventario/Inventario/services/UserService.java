@@ -6,7 +6,6 @@ import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.UserEntityMapper;
 import com.inventario.Inventario.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

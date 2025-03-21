@@ -2,11 +2,11 @@ package com.inventario.Inventario.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
+import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
+@Data
 public class ProductRequestDTO {
     private String code;
     private String name;

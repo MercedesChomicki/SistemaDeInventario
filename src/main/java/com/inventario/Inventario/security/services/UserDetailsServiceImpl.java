@@ -1,4 +1,4 @@
-package com.inventario.Inventario.services;
+package com.inventario.Inventario.security.services;
 
 import com.inventario.Inventario.entities.UserEntity;
 import com.inventario.Inventario.repositories.UserRepository;

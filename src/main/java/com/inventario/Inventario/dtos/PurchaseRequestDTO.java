@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
+@Data
 public class PurchaseRequestDTO {
     @NotNull
     private Integer supplierId;
@@ -20,6 +20,6 @@ public class PurchaseRequestDTO {
     @NotEmpty(message = "Debe especificar los pagos")
     private List<@Valid PaymentRequestDTO> payments;
 
-    @DecimalMin(value = "0.0", inclusive = true, message = "El recargo no puede ser negativo")
+    @DecimalMin(value = "0.0", message = "El recargo no puede ser negativo")
     private BigDecimal surcharge  = BigDecimal.ZERO;
 }

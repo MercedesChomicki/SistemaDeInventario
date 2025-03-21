@@ -5,9 +5,9 @@ import com.inventario.Inventario.entities.LegalEntity;
 import com.inventario.Inventario.entities.TaxCategory;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class SupplierRequestDTO {
 
     @Enumerated(EnumType.STRING)
@@ -31,5 +31,4 @@ public class SupplierRequestDTO {
 
     private String phone;
     private String email;
-
 }

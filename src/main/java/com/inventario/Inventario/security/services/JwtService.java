@@ -1,4 +1,4 @@
-package com.inventario.Inventario.security;
+package com.inventario.Inventario.security.services;
 
 import java.security.Key;
 import java.util.Date;

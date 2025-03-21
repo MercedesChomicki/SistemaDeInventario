@@ -8,8 +8,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.inventario.Inventario.security.JwtService;
-import com.inventario.Inventario.services.UserDetailsServiceImpl;
+import com.inventario.Inventario.security.services.JwtService;
+import com.inventario.Inventario.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

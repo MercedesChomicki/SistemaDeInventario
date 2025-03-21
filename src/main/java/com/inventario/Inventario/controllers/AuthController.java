@@ -3,7 +3,7 @@ package com.inventario.Inventario.controllers;
 import com.inventario.Inventario.dtos.LoginRequestDTO;
 import com.inventario.Inventario.dtos.UserRequestDTO;
 import com.inventario.Inventario.dtos.UserResponseDTO;
-import com.inventario.Inventario.services.AuthService;
+import com.inventario.Inventario.security.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

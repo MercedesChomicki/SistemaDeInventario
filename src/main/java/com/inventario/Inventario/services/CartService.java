@@ -3,11 +3,7 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.dtos.CartResponseDTO;
 import com.inventario.Inventario.dtos.CartUptRequestDTO;
 import com.inventario.Inventario.entities.Cart;
-import com.inventario.Inventario.entities.UserEntity;
-import com.inventario.Inventario.exceptions.ResourceNotFoundException;
 import com.inventario.Inventario.mappers.CartMapper;
-import com.inventario.Inventario.repositories.CartRepository;
-import com.inventario.Inventario.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +33,6 @@ public class CartService {
 
     private final CartMapper cartMapper;
     private final CartManagerService cartManagerService;
-    private final CartRepository cartRepository;
-    private final UserRepository userRepository;
 
     public CartResponseDTO getCartByUserId(Integer userId) {
         Cart cart = cartManagerService.getCartByUserId(userId);
@@ -54,13 +48,8 @@ public class CartService {
         return cartMapper.toDTO(cart);
     }
 
-    public CartResponseDTO updateCart(Integer cartId, CartUptRequestDTO dto) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrito", cartId));
-        UserEntity user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", dto.getUserId()));
-        cart.setUser(user);
-        cartRepository.save(cart);
+    public CartResponseDTO updateCartUser(Integer userId, CartUptRequestDTO dto) {
+        Cart cart = cartManagerService.updateCartUser(userId, dto);
         return cartMapper.toDTO(cart);
     }
 

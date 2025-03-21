@@ -26,10 +26,10 @@ public class CartController {
         return ResponseEntity.ok(dto);
     }
 
-    @PatchMapping("/{cartId}")
-    public ResponseEntity<CartResponseDTO> updateCart(@PathVariable Integer cartId,
+    @PatchMapping("/{userId}")
+    public ResponseEntity<CartResponseDTO> updateCartUser(@PathVariable Integer userId,
                                                       @RequestBody CartUptRequestDTO request) {
-        CartResponseDTO dto = cartService.updateCart(cartId, request);
+        CartResponseDTO dto = cartService.updateCartUser(userId, request);
         return ResponseEntity.ok(dto);
     }
 
