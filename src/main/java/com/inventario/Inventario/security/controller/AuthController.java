@@ -1,4 +1,4 @@
-package com.inventario.Inventario.controllers;
+package com.inventario.Inventario.security.controller;
 
 import com.inventario.Inventario.dtos.LoginRequestDTO;
 import com.inventario.Inventario.dtos.UserRequestDTO;

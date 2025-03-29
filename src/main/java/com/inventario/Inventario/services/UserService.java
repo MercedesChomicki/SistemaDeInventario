@@ -1,5 +1,6 @@
 package com.inventario.Inventario.services;
 
+import com.inventario.Inventario.dtos.UserRequestDTO;
 import com.inventario.Inventario.dtos.UserResponseDTO;
 import com.inventario.Inventario.entities.UserEntity;
 import com.inventario.Inventario.exceptions.ResourceNotFoundException;
@@ -27,6 +28,20 @@ public class UserService {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         return userEntityMapper.toDTO(user);
+    }
+
+    public UserEntity updateUser(Integer id, UserRequestDTO dto) {
+        UserEntity existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("UserEntityistrador",id));
+
+        if(dto.getUsername() != null) existingUser.setUsername(dto.getUsername());
+        if(dto.getPassword() != null) existingUser.setPassword(dto.getPassword());
+        if(dto.getFirstname() != null) existingUser.setFirstname(dto.getFirstname());
+        if(dto.getLastname() != null) existingUser.setLastname(dto.getLastname());
+        if(dto.getEmail() != null) existingUser.setEmail(dto.getEmail());
+        if(dto.getPhone() != null) existingUser.setPhone(dto.getPhone());
+
+        return userRepository.save(existingUser);
     }
 
     public void deleteUser(Integer id) {

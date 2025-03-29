@@ -7,10 +7,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserEntityMapper {
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "role", source = "role")
     @Mapping(target = "registrationTime", source = "registrationTime")
     UserResponseDTO toDTO(UserEntity userEntity);
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "role", source = "role")
     @Mapping(target = "registrationTime", source = "registrationTime")
     UserEntity toEntity(UserResponseDTO userResponseDTO);

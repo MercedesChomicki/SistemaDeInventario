@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserResponseDTO {
+    private Integer id;
     private String username;
     private String password;
     private String firstname;

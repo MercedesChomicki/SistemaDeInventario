@@ -1,12 +1,14 @@
 package com.inventario.Inventario.security;
 
 import com.inventario.Inventario.security.filters.AuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,20 +36,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * .maximumSessions(1) --> Se permite más de una sesión en aplicaciones multiplataformas por ejemplo.
  */
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // Habilita la seguridad web
+@EnableMethodSecurity // Permite hacer algunas configuraciones en los métodos con anotación
 public class SecurityConfig {
 
     @Autowired
+    private AuthenticationFilter authFilter;
+    @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    private AuthenticationFilter authFilter;
-
-    /** Codifica contraseñas. Se utiliza para cifrar la contraseña
-     * y almacenar el usuario en la DB */
+    /** Se utiliza para especificar qué patrones de URL requieren
+     * seguridad y cuáles no */
     @Bean
-    public BCryptPasswordEncoder pwdEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/auth/register","/auth/login").permitAll()
+                        .requestMatchers("/reports/**", "/alerts/**", "/purchases/**", "/suppliers/**", "/users/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/products", "/categories", "/species", "/sales").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    /**
+     * Es responsable de comprobar que las credenciales de inicio de
+     * sesión sean válidas, es decir, validar al usuario.
+     */
+    @Bean
+    public AuthenticationManager authManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
     /**
@@ -64,30 +88,10 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /**
-     * Es responsable de comprobar que las credenciales de inicio de
-     * sesión sean válidas, es decir, validar al usuario.
-     */
+    /** Codifica contraseñas. Se utiliza para cifrar la contraseña
+     * y almacenar el usuario en la DB */
     @Bean
-    public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    /** Se utiliza para especificar qué patrones de URL requieren
-     * seguridad y cuáles no */
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register","/auth/login", "/products").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+    public BCryptPasswordEncoder pwdEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
