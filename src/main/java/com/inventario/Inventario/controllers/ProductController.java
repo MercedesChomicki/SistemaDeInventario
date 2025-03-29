@@ -3,6 +3,7 @@ package com.inventario.Inventario.controllers;
 import com.inventario.Inventario.dtos.ProductFullResponseDTO;
 import com.inventario.Inventario.dtos.ProductRequestDTO;
 import com.inventario.Inventario.dtos.ProductResponseDTO;
+import com.inventario.Inventario.dtos.UpdatePriceRequestDTO;
 import com.inventario.Inventario.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -50,35 +50,16 @@ public class ProductController {
         return ResponseEntity.ok(updated);
     }
 
+    @PatchMapping("/{id}/updatePrice")
+    public ResponseEntity<String> updatePrice(@PathVariable Integer id, @RequestBody UpdatePriceRequestDTO dto) {
+        productService.updatePrice(id, dto);
+        return ResponseEntity.ok("El precio se actualizó correctamente");
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Se ha eliminado exitosamente.");
     }
-
-    @PatchMapping("/increase-stock/product/{id}/quantity/{quantity}")
-    public ResponseEntity<ProductResponseDTO> increaseStock(
-            @PathVariable Integer id,
-            @PathVariable Integer quantity) {
-        ProductResponseDTO updated = productService.increaseStock(id, quantity);
-        return ResponseEntity.ok(updated);
-    }
-
-    @PatchMapping("/increase-price/product/{id}/newPrice/{newPrice}")
-    public ResponseEntity<ProductResponseDTO> increasePrice(
-            @PathVariable Integer id,
-            @PathVariable BigDecimal newPrice) {
-        ProductResponseDTO updated = productService.increasePrice(id, newPrice);
-        return ResponseEntity.ok(updated);
-    }
-
-    @PatchMapping("/increase-price-w-percentage/product/{id}/percentaje/{percentaje}")
-    public ResponseEntity<ProductResponseDTO> increasePriceWithPercentage(
-            @PathVariable Integer id,
-            @PathVariable BigDecimal percentaje) {
-        ProductResponseDTO updated = productService.increasePriceWithPercentage(id, percentaje);
-        return ResponseEntity.ok(updated);
-    }
-
 }
 

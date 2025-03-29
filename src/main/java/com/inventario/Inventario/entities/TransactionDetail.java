@@ -37,7 +37,7 @@ public class TransactionDetail {
     }
 
     public void updateDetailValues(Integer quantity){
-        this.unitPrice = this.product.getPrice();
+        this.unitPrice = this.product.getSalePrice();
         this.quantity += quantity;
         this.subtotal = this.subtotal.add(unitPrice.multiply(BigDecimal.valueOf(quantity)));
     }

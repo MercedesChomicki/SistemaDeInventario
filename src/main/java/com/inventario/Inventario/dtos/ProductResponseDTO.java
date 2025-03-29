@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class ProductResponseDTO {
     private int id;
     private String name;
-    private BigDecimal price;
+    private BigDecimal salePrice;
     private Integer stock;
     private String species;
     private String category;

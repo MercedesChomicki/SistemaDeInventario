@@ -3,6 +3,7 @@ package com.inventario.Inventario.services;
 import com.inventario.Inventario.dtos.ProductFullResponseDTO;
 import com.inventario.Inventario.dtos.ProductRequestDTO;
 import com.inventario.Inventario.dtos.ProductResponseDTO;
+import com.inventario.Inventario.dtos.UpdatePriceRequestDTO;
 import com.inventario.Inventario.entities.Category;
 import com.inventario.Inventario.entities.Product;
 import com.inventario.Inventario.entities.Species;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -43,76 +43,50 @@ public class ProductService {
     }
 
     public ProductResponseDTO getProductById(Integer id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        return productMapper.toDTO(product);
+        return productMapper.toDTO(findProductById(id));
     }
 
     public ProductResponseDTO createProduct(ProductRequestDTO dto) {
-        boolean exists = productRepository.existsByCodeIgnoreCase(dto.getCode())
-                || productRepository.existsByNameIgnoreCase(dto.getName());
+        validateProductUniqueness(dto.getCode(), dto.getName());
+        validateExpirationDate(dto.getExpirationDate());
 
-        if (exists)
-            throw new BusinessException("El producto ya se encuentra registrado");
-
-        Map<String, Object> entities = fetchRelatedEntities(dto);
+        RelatedEntities entities = fetchRelatedEntities(dto);
 
         Product product = new Product(
-                dto.getCode(), dto.getName(), dto.getDescription(), dto.getPurchasePrice(),
-                dto.getPercentageIncrease(), dto.getCashPrice(), dto.getStock(), dto.getImageUrl(),
-                dto.getExpirationDate(), (Species) entities.get("species"), (Category) entities.get("category"),
-                (Supplier) entities.get("supplier")
+                dto.getCode(), dto.getName(), dto.getDescription(), dto.getCost(), dto.getSalePrice(),
+                dto.getStock(), dto.getImageUrl(), dto.getExpirationDate(),
+                entities.species(), entities.category(), entities.supplier()
         );
 
         Product savedProduct = productRepository.save(product);
         return productMapper.toDTO(savedProduct);
     }
 
-    public ProductFullResponseDTO updateProduct(Integer id, ProductRequestDTO updatedProduct) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
+    public ProductFullResponseDTO updateProduct(Integer id, ProductRequestDTO dto) {
+        Product product = findProductById(id);
 
-        Map<String, Object> entities = fetchRelatedEntities(updatedProduct);
+        /* TODO Si dejo nulos los campos specieId, categoryId y supplierId da error.
+            Solución: generar autocompletado en el front-end para que queden los valores
+            anteriores en caso de no querer modificarlos */
+        RelatedEntities entities = fetchRelatedEntities(dto);
 
-        // Copiar solo los valores no nulos del objeto actualizado
-        if (updatedProduct.getName() != null) product.setName(updatedProduct.getName());
-        if (updatedProduct.getCode() != null) product.setCode(updatedProduct.getCode());
-        if (updatedProduct.getDescription() != null) product.setDescription(updatedProduct.getDescription());
-        if (updatedProduct.getImageUrl() != null) product.setImageUrl(updatedProduct.getImageUrl());
-        if (updatedProduct.getPurchasePrice() != null) product.setPurchasePrice(updatedProduct.getPurchasePrice());
-        if (updatedProduct.getPercentageIncrease() != null) product.setPercentageIncrease(updatedProduct.getPercentageIncrease());
-        if (updatedProduct.getCashPrice().compareTo(BigDecimal.ZERO) > 0) product.setPrice(updatedProduct.getCashPrice());
+        copyNonNullProperties(dto, product);
 
-        if (updatedProduct.getStock() <= 0) throw new BusinessException("El stock debe ser mayor a 0.");
-        else product.setStock(updatedProduct.getStock());
-
-        if (updatedProduct.getExpirationDate() != null) {
-            if (updatedProduct.getExpirationDate().isBefore(LocalDate.now())) {
-                throw new BusinessException("La fecha de expiración no puede estar en el pasado.");
-            }
-            product.setExpirationDate(updatedProduct.getExpirationDate());
-        }
-        if (updatedProduct.getSpeciesId() != null) product.setSpecies((Species) entities.get("species"));
-        if (updatedProduct.getCategoryId() != null) product.setCategory((Category) entities.get("category"));
-        if (updatedProduct.getSupplierId() != null) product.setSupplier((Supplier) entities.get("supplier"));
+        if (dto.getSpeciesId() != null) product.setSpecies(entities.species());
+        if (dto.getCategoryId() != null) product.setCategory(entities.category());
+        if (dto.getSupplierId() != null) product.setSupplier(entities.supplier());
 
         Product savedProduct = productRepository.save(product);
         return productMapper.toFullDTO(savedProduct);
     }
 
-    private Map<String, Object> fetchRelatedEntities(ProductRequestDTO dto) {
-        Species species = speciesRepository.findById(dto.getSpeciesId())
-                .orElseThrow(() -> new ResourceNotFoundException("Especie", dto.getSpeciesId()));
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría", dto.getCategoryId()));
-        Supplier supplier = supplierRepository.findById(dto.getSupplierId())
-                .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()));
-
-        Map<String, Object> entities = new HashMap<>();
-        entities.put("species", species);
-        entities.put("category", category);
-        entities.put("supplier", supplier);
-        return entities;
+    public void updatePrice(Integer id, UpdatePriceRequestDTO dto) {
+        if (dto.getNewPrice() == null || dto.getNewPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("El precio debe ser mayor que cero.");
+        }
+        Product product = findProductById(id);
+        product.setSalePrice(dto.getNewPrice());
+        productRepository.save(product);
     }
 
     public void deleteProduct(Integer id) {
@@ -122,31 +96,45 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public ProductResponseDTO increaseStock(Integer id, int quantity) {
-        Product product = productRepository.findById(id)
+    private Product findProductById(Integer id) {
+        return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        product.setStock(product.getStock() + quantity);
-        Product updated = productRepository.save(product);
-        return productMapper.toDTO(updated);
     }
 
-    public ProductResponseDTO increasePrice(Integer id, BigDecimal newPrice) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        if (newPrice != null) product.setPrice(newPrice);
-        Product updated = productRepository.save(product);
-        return productMapper.toDTO(updated);
+    private void copyNonNullProperties(ProductRequestDTO dto, Product product) {
+        if (dto.getName() != null) product.setName(dto.getName());
+        if (dto.getCode() != null) product.setCode(dto.getCode());
+        if (dto.getDescription() != null) product.setDescription(dto.getDescription());
+        if (dto.getImageUrl() != null) product.setImageUrl(dto.getImageUrl());
+        if (dto.getCost() != null) product.setCost(dto.getCost());
+        if (dto.getSalePrice() != null && dto.getSalePrice().compareTo(BigDecimal.ZERO) > 0)
+            product.setSalePrice(dto.getSalePrice());
     }
 
-    public ProductResponseDTO increasePriceWithPercentage(Integer id, BigDecimal percentage) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto", id));
-        if(percentage != null) {
-            BigDecimal percentageIncrease = BigDecimal.ONE.add(percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
-            product.setPrice(product.getPrice().multiply(percentageIncrease));
+    private void validateExpirationDate(LocalDate expirationDate) {
+        if (expirationDate != null && expirationDate.isBefore(LocalDate.now())) {
+            throw new BusinessException("La fecha de expiración no puede estar en el pasado.");
         }
-        Product updated = productRepository.save(product);
-        return productMapper.toDTO(updated);
+    }
+
+    private void validateProductUniqueness(String code, String name) {
+        boolean exists = productRepository.existsByCodeIgnoreCase(code) || productRepository.existsByNameIgnoreCase(name);
+        if (exists) {
+            throw new BusinessException("El producto ya se encuentra registrado");
+        }
+    }
+
+    private record RelatedEntities(Species species, Category category, Supplier supplier) {}
+
+    private RelatedEntities fetchRelatedEntities(ProductRequestDTO dto) {
+        return new RelatedEntities(
+                speciesRepository.findById(dto.getSpeciesId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Especie", dto.getSpeciesId())),
+                categoryRepository.findById(dto.getCategoryId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoría", dto.getCategoryId())),
+                supplierRepository.findById(dto.getSupplierId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Proveedor", dto.getSupplierId()))
+        );
     }
 }
 

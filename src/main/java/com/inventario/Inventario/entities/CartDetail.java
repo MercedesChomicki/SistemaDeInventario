@@ -21,7 +21,7 @@ public class CartDetail extends TransactionDetail {
     private Cart cart;
 
     public CartDetail(Cart cart, Product product, Integer quantity) {
-        super(product, quantity, product.getPrice());
+        super(product, quantity, product.getSalePrice());
         this.cart = cart;
     }
 }

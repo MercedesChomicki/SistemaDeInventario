@@ -116,7 +116,7 @@ public class DebtManagerService {
         BigDecimal total = debt.getDetails().stream()
                 .peek(detail -> {
                     Product product = detail.getProduct();
-                    BigDecimal actualPrice = product.getPrice();
+                    BigDecimal actualPrice = product.getSalePrice();
                     detail.setUnitPrice(actualPrice);
                     detail.setSubtotal(actualPrice.multiply(BigDecimal.valueOf(detail.getQuantity())));
                 })

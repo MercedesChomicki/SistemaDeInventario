@@ -13,8 +13,8 @@ public class ProductFullResponseDTO {
     private String code;
     private String name;
     private String description;
-    private BigDecimal purchasePrice;
-    private BigDecimal cashPrice;
+    private BigDecimal cost;
+    private BigDecimal salePrice;
     private Integer stock;
     private LocalDate expirationDate;
     private String species;

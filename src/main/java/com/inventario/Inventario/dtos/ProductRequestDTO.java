@@ -12,11 +12,9 @@ public class ProductRequestDTO {
     private String name;
     private String description;
     @Positive
-    private BigDecimal purchasePrice;
-    @DecimalMin("0.0")
-    private BigDecimal percentageIncrease;
+    private BigDecimal cost;
     @Min(0)
-    private BigDecimal cashPrice;
+    private BigDecimal salePrice;
     @Min(0)
     private int stock;
     @Schema(example = "null")

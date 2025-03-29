@@ -18,7 +18,7 @@ public class DebtDetail extends TransactionDetail{
     private Debt debt;
 
     public DebtDetail(Debt debt, Product product, Integer quantity) {
-        super(product, quantity, product.getPrice());
+        super(product, quantity, product.getSalePrice());
         this.debt = debt;
     }
 }
